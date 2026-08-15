@@ -1,0 +1,7 @@
+---
+const { category } = Astro.props as { category: { name: string; href: string; icon?: string } };
+---
+<a href={category.href} class="p-4 text-center border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors text-[var(--color-text-primary)]">
+  {category.icon && <span class="text-2xl block">{category.icon}</span>}
+  <span class="font-medium">{category.name}</span>
+</a>

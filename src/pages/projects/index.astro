@@ -1,0 +1,33 @@
+---
+// src/pages/projects/index.astro
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects', ({ data }) => !data.draft);
+const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+---
+
+<BaseLayout title="AI Projects - Build Your Portfolio" description="Practical AI and software engineering projects from beginner to advanced.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Build Something</h1>
+    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Hands-on tutorials to master algorithms, data structures, and production AI.</p>
+    
+    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {allProjects.map(project => (
+        <a href={`/projects/${project.slug}`} class="block border border-[var(--color-border)] rounded-xl p-6 hover:shadow-md transition-shadow bg-[var(--color-bg)]">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wide">{project.data.difficulty}</span>
+            <span class="text-xs text-[var(--color-text-muted)]">{project.data.timeToBuild}</span>
+          </div>
+          <h3 class="mt-3 text-xl font-bold text-[var(--color-text-primary)]">{project.data.title}</h3>
+          <p class="mt-2 text-sm text-[var(--color-text-secondary)] line-clamp-2">{project.data.description}</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {project.data.techStack.slice(0, 3).map(tech => (
+              <span class="px-2 py-1 bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] text-xs rounded-md">{tech}</span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

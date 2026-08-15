@@ -1,0 +1,24 @@
+---
+// src/pages/ai/index.astro
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import CategoryCard from '@/components/cards/CategoryCard.astro';
+
+const categories = [
+  { name: 'Machine Learning', href: '/blog?category=ml', icon: '🤖' },
+  { name: 'Deep Learning', href: '/blog?category=deep-learning', icon: '🧠' },
+  { name: 'Generative AI', href: '/blog?category=gen-ai', icon: '✨' },
+  { name: 'LLMs', href: '/blog?category=llms', icon: '📚' },
+  { name: 'AI Engineering', href: '/blog?category=ai-engineering', icon: '⚙️' }
+];
+---
+
+<BaseLayout title="Explore AI Topics" description="Learn the fundamentals and advanced concepts of Artificial Intelligence.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Explore AI</h1>
+    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Deep dives into the algorithms, models, and math powering the future.</p>
+    
+    <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      {categories.map(cat => <CategoryCard category={cat} />)}
+    </div>
+  </div>
+</BaseLayout>

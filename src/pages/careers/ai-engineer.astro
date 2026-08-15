@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+const steps = [
+  { title: 'Programming', items: ['Python', 'C++', 'Git', 'Linux'] },
+  { title: 'Mathematics', items: ['Linear Algebra', 'Probability', 'Statistics'] },
+  { title: 'Machine Learning', items: ['Supervised', 'Unsupervised', 'Evaluation'] },
+  { title: 'Deep Learning', items: ['PyTorch', 'CNN', 'Transformers'] },
+  { title: 'Generative AI', items: ['LLMs', 'RAG', 'Agents', 'Fine-tuning'] },
+  { title: 'Production', items: ['APIs', 'Docker', 'Cloud', 'MLOps'] },
+  { title: 'Projects', items: ['Beginner', 'Intermediate', 'Advanced'] },
+  { title: 'Career', items: ['Resume', 'Interviews', 'Jobs'] },
+];
+---
+
+<BaseLayout title="AI Engineer Roadmap" description="Complete roadmap to become an AI engineer in 2026.">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">AI Engineer Roadmap</h1>
+    <p class="mt-2 text-xl text-[var(--color-text-secondary)]">What is an AI Engineer? Skills, difficulty, time.</p>
+    <div class="mt-10 space-y-8">
+      {steps.map((step, idx) => (
+        <div key={idx} class="border-l-4 border-[var(--color-accent)] pl-4">
+          <h2 class="text-2xl font-semibold text-[var(--color-text-primary)]">{`0${idx+1} ${step.title}`}</h2>
+          <ul class="mt-2 list-disc list-inside text-[var(--color-text-secondary)] space-y-1">
+            {step.items.map(item => <li>{item}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -9,7 +9,6 @@ export default defineConfig({
   integrations: [mdxPlugin(), sitemap(), tailwind()],
   output: 'static',
   build: {
-    // Automatically inline critical CSS to eliminate render-blocking requests
     inlineStylesheets: 'auto',
     assets: '_assets',
   },

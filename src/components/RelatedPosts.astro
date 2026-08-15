@@ -1,0 +1,14 @@
+---
+const { posts } = Astro.props as { posts: any[] };
+---
+<section class="mt-12 border-t border-[var(--color-border)] pt-8">
+  <h3 class="text-xl font-bold text-[var(--color-text-primary)]">Related Articles</h3>
+  <div class="mt-4 grid gap-4 md:grid-cols-3">
+    {posts.map(post => (
+      <a href={`/blog/${post.slug}`} class="block p-4 border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors">
+        <h4 class="font-semibold text-[var(--color-text-primary)]">{post.data.title}</h4>
+        <p class="text-sm text-[var(--color-text-muted)]">{post.data.category}</p>
+      </a>
+    ))}
+  </div>
+</section>

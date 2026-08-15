@@ -12,7 +12,12 @@ import BaseLayout from '@/components/layout/BaseLayout.astro';
       </p>
     </div>
 
-    <div class="mt-8 border border-[var(--color-border)] rounded-2xl p-8 bg-[var(--color-bg-secondary)]">
+    <div class="mt-8 prose prose-lg max-w-none 
+  text-[var(--color-text-secondary)] 
+  prose-headings:text-[var(--color-text-primary)] 
+  prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline 
+  prose-strong:text-[var(--color-text-primary)] 
+  prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]">
       <form action="#" method="POST" class="space-y-6">
         <div>
           <label for="name" class="block text-sm font-medium text-[var(--color-text-primary)]">Your Name</label>

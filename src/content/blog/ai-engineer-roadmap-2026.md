@@ -21,3 +21,4 @@ Python is essential...
 ```python
 def hello():
     print("Hello, AI!")
+```

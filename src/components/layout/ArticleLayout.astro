@@ -54,7 +54,17 @@ const breadcrumbItems = [
       <aside class="lg:col-span-1 hidden lg:block sticky top-24 self-start">
         <TableOfContents headings={headings} />
       </aside>
-      <div class="lg:col-span-3 prose prose-lg max-w-none prose-headings:font-semibold prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline prose-code:bg-[var(--color-bg-secondary)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-0.5 prose-blockquote:pl-4 [&_img]:rounded-lg [&_img]:border [&_img]:border-[var(--color-border)]">
+      <div class="lg:col-span-3 prose prose-lg max-w-none 
+        text-[var(--color-text-secondary)]
+        prose-headings:text-[var(--color-text-primary)] prose-headings:font-semibold 
+        prose-p:text-[var(--color-text-secondary)]
+        prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline 
+        prose-strong:text-[var(--color-text-primary)]
+        prose-code:text-[var(--color-text-primary)] prose-code:bg-[var(--color-bg-secondary)] prose-code:px-1 prose-code:rounded prose-code:before:hidden prose-code:after:hidden
+        prose-pre:bg-[var(--color-bg-secondary)] prose-pre:text-[var(--color-text-primary)] prose-pre:border prose-pre:border-[var(--color-border)]
+        prose-blockquote:text-[var(--color-text-muted)] prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-0.5 prose-blockquote:pl-4 
+        prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]
+        [&_img]:rounded-lg [&_img]:border [&_img]:border-[var(--color-border)]">
         <slot name="content" />
       </div>
     </div>

@@ -5,3 +5,4 @@
   const theme = stored || system;
   document.documentElement.classList.toggle('dark', theme === 'dark');
 })();
+ 

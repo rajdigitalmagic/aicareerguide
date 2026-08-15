@@ -1,0 +1,41 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import Search from '@/components/Search.astro';
+---
+
+<header class="border-b border-[var(--color-border)] bg-[var(--color-bg)] sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex items-center space-x-2">
+        <a href="/" class="text-xl font-bold text-[var(--color-text-primary)] hover:text-[var(--color-accent)] transition-colors">
+          <span class="sr-only">AI Career Guide</span>
+          <span class="hidden sm:inline">AI Career Guide</span>
+          <span class="sm:hidden">AI</span>
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-6 text-sm font-medium text-[var(--color-text-secondary)]">
+        <a href="/ai" class="hover:text-[var(--color-accent)] transition-colors">AI</a>
+        <a href="/careers" class="hover:text-[var(--color-accent)] transition-colors">Careers</a>
+        <a href="/projects" class="hover:text-[var(--color-accent)] transition-colors">Projects</a>
+        <a href="/tools" class="hover:text-[var(--color-accent)] transition-colors">Tools</a>
+        <a href="/resources" class="hover:text-[var(--color-accent)] transition-colors">Resources</a>
+        <a href="/blog" class="hover:text-[var(--color-accent)] transition-colors">Blog</a>
+      </nav>
+
+      <!-- Right side: Search + ThemeToggle -->
+      <div class="flex items-center space-x-3">
+        <Search client:load />
+        <ThemeToggle />
+        <!-- Mobile menu button (placeholder) -->
+        <button class="md:hidden p-2 rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors" aria-label="Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile navigation (hidden by default) – implement later -->

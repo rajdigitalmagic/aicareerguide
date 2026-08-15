@@ -1,5 +1,5 @@
 ---
-// We'll use Fuse.js client-side. This component is hydrated on load.
+// This component uses Fuse.js. It will be hydrated on load.
 ---
 
 <div class="relative" id="search-container">
@@ -18,10 +18,10 @@
   
   let fuse = null;
   const input = document.getElementById('search-input');
-  const resultsContainer = document.getElementById('search-results');
+  const container = document.getElementById('search-container');
+  const resultsEl = document.getElementById('search-results');
 
-  // Fetch search index (generated statically)
-  async function loadSearchIndex() {
+  async function loadIndex() {
     const res = await fetch('/search-index.json');
     const data = await res.json();
     fuse = new Fuse(data, {
@@ -31,14 +31,14 @@
     });
   }
 
-  function renderResults(results) {
-    if (results.length === 0) {
-      resultsContainer.innerHTML = '<div class="p-3 text-sm text-[var(--color-text-muted)]">No results found</div>';
-      resultsContainer.classList.remove('hidden');
+  function render(results) {
+    if (!results.length) {
+      resultsEl.innerHTML = '<div class="p-3 text-sm text-[var(--color-text-muted)]">No results</div>';
+      resultsEl.classList.remove('hidden');
       return;
     }
     let html = '<ul class="divide-y divide-[var(--color-border)]">';
-    results.slice(0, 5).forEach(({ item }) => {
+    results.slice(0, 6).forEach(({ item }) => {
       html += `
         <li>
           <a href="${item.url}" class="block p-3 hover:bg-[var(--color-bg-secondary)] transition-colors">
@@ -49,33 +49,35 @@
       `;
     });
     html += '</ul>';
-    resultsContainer.innerHTML = html;
-    resultsContainer.classList.remove('hidden');
+    resultsEl.innerHTML = html;
+    resultsEl.classList.remove('hidden');
   }
 
-  input.addEventListener('focus', () => {
-    if (fuse && input.value.length > 0) {
-      const results = fuse.search(input.value);
-      renderResults(results);
+  input.addEventListener('focus', async () => {
+    if (!fuse) await loadIndex();
+    const query = input.value.trim();
+    if (query) {
+      const results = fuse.search(query);
+      render(results);
     } else {
-      resultsContainer.classList.add('hidden');
+      resultsEl.classList.add('hidden');
     }
   });
 
   input.addEventListener('input', async () => {
-    if (!fuse) await loadSearchIndex();
+    if (!fuse) await loadIndex();
     const query = input.value.trim();
-    if (query.length === 0) {
-      resultsContainer.classList.add('hidden');
+    if (!query) {
+      resultsEl.classList.add('hidden');
       return;
     }
     const results = fuse.search(query);
-    renderResults(results);
+    render(results);
   });
 
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('#search-container')) {
-      resultsContainer.classList.add('hidden');
+    if (!container.contains(e.target)) {
+      resultsEl.classList.add('hidden');
     }
   });
 </script>

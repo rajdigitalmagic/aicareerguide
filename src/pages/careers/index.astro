@@ -1,0 +1,30 @@
+---
+// src/pages/careers/index.astro
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+
+const careers = [
+  { title: 'AI Engineer', path: '/careers/ai-engineer', desc: 'Build and deploy machine learning models into production environments.' },
+  { title: 'Machine Learning Engineer', path: '#', desc: 'Design, optimize, and train complex algorithmic models.' },
+  { title: 'Data Scientist', path: '#', desc: 'Extract actionable insights and value from large datasets.' },
+  { title: 'Software Engineer', path: '#', desc: 'Build the core infrastructure, APIs, and applications.' }
+];
+---
+
+<BaseLayout title="Tech & AI Career Roadmaps" description="Step-by-step roadmaps to land your dream role in technology and AI.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Career Roadmaps</h1>
+    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Step-by-step guides from learning the fundamentals to passing technical interviews.</p>
+    
+    <div class="mt-8 grid gap-6 md:grid-cols-2">
+      {careers.map(career => (
+        <a href={career.path} class="block border border-[var(--color-border)] rounded-xl p-6 hover:shadow-md transition-shadow bg-[var(--color-bg)] group">
+          <h3 class="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors">{career.title}</h3>
+          <p class="mt-2 text-[var(--color-text-secondary)]">{career.desc}</p>
+          <div class="mt-4 text-sm font-semibold text-[var(--color-accent)] flex items-center gap-1">
+            View Roadmap <span aria-hidden="true">&rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

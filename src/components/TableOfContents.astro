@@ -4,18 +4,14 @@ export interface Heading {
   slug: string;
   text: string;
 }
-
 const { headings } = Astro.props as { headings: Heading[] };
 ---
-
 <nav class="space-y-1">
   <p class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Contents</p>
   <ul class="space-y-1 text-sm">
-    {headings.map(heading => (
-      <li style={{ paddingLeft: `${(heading.depth - 2) * 0.75}rem` }}>
-        <a href={`#${heading.slug}`} class="block py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">
-          {heading.text}
-        </a>
+    {headings.map(h => (
+      <li style={{ paddingLeft: `${(h.depth - 2) * 0.75}rem` }}>
+        <a href={`#${h.slug}`} class="block py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">{h.text}</a>
       </li>
     ))}
   </ul>

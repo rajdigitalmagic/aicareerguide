@@ -1,18 +1,69 @@
 ---
+// src/components/TableOfContents.astro
+
 export interface Heading {
   depth: number;
   slug: string;
   text: string;
 }
-const { headings } = Astro.props as { headings: Heading[] };
+
+export interface Props {
+  headings: Heading[];
+}
+
+// Default to an empty array to prevent crashes if no headings exist
+const { headings = [] } = Astro.props;
+
+// Filter the TOC to only show H2 and H3 for a clean, readable hierarchy
+const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
-<nav class="space-y-1">
-  <p class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Contents</p>
-  <ul class="space-y-1 text-sm">
-    {headings.map(h => (
-      <li style={{ paddingLeft: `${(h.depth - 2) * 0.75}rem` }}>
-        <a href={`#${h.slug}`} class="block py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">{h.text}</a>
-      </li>
-    ))}
-  </ul>
-</nav>
+
+{filteredHeadings.length > 0 && (
+  <nav aria-label="Table of Contents" class="toc-container">
+    <p class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Contents</p>
+    <ul class="space-y-2 text-sm">
+      {filteredHeadings.map((heading) => (
+        <li class={`leading-tight ${heading.depth === 3 ? 'ml-4' : ''}`}>
+          <a 
+            href={`#${heading.slug}`} 
+            class="toc-link block py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors data-[active=true]:text-[var(--color-accent)] data-[active=true]:font-semibold"
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  // Wait for the DOM to load before attaching the observer
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute('id');
+          // Find the corresponding link in the TOC
+          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`);
+          
+          if (tocLink) {
+            if (entry.isIntersecting) {
+              // Highlight the active section
+              tocLink.setAttribute('data-active', 'true');
+            } else {
+              // Remove highlight when section leaves the viewport
+              tocLink.setAttribute('data-active', 'false');
+            }
+          }
+        });
+      },
+      // Triggers the highlight when the heading is near the top third of the screen
+      { rootMargin: '-10% 0px -80% 0px' }
+    );
+
+    // Tell the observer to track all H2 and H3 tags inside the article content
+    document.querySelectorAll('.prose h2[id], .prose h3[id]').forEach((section) => {
+      observer.observe(section);
+    });
+  });
+</script>

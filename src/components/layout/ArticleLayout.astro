@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '@/components/layout/BaseLayout.astro';
+import BaseLayout from './BaseLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import RelatedPosts from '@/components/RelatedPosts.astro';
 import AuthorBox from '@/components/AuthorBox.astro';
@@ -17,94 +17,42 @@ export interface Props {
   readingTime?: string;
   headings: { depth: number; slug: string; text: string }[];
   relatedPosts?: any[];
-  content: any; // the rendered article content
+  content: any; // not used directly, we use <slot name="content" />
 }
 
-const {
-  title,
-  description,
-  pubDate,
-  author,
-  category,
-  tags,
-  image,
-  readingTime,
-  headings,
-  relatedPosts,
-  content,
-} = Astro.props;
+const { title, description, pubDate, author, category, tags, image, readingTime, headings, relatedPosts } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} image={image} canonical={Astro.url.pathname} article={true}>
   <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Category -->
-    <div class="text-sm font-semibold text-[var(--color-accent)] uppercase tracking-wide mb-2">
-      {category}
-    </div>
-
-    <!-- Title -->
-    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] leading-tight">
-      {title}
-    </h1>
-
-    <!-- Description -->
+    <div class="text-sm font-semibold text-[var(--color-accent)] uppercase tracking-wide mb-2">{category}</div>
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] leading-tight">{title}</h1>
     <p class="text-xl text-[var(--color-text-secondary)] mt-4">{description}</p>
-
-    <!-- Meta -->
     <div class="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-muted)] mt-4">
-      <span>{author}</span>
-      <span>·</span>
+      <span>{author}</span><span>·</span>
       <time datetime={pubDate.toISOString()}>{pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-      {readingTime && (
-        <>
-          <span>·</span>
-          <span>{readingTime} min read</span>
-        </>
-      )}
+      {readingTime && <><span>·</span><span>{readingTime} min read</span></>}
     </div>
-
-    <!-- Share buttons -->
-    <div class="mt-4 flex items-center gap-3">
-      <ShareButtons url={Astro.url.href} title={title} />
-    </div>
-
-    <!-- Hero Image -->
+    <div class="mt-4"><ShareButtons url={Astro.url.href} title={title} /></div>
     {image && (
-      <figure class="mt-8">
-        <img src={image} alt={title} class="w-full rounded-xl border border-[var(--color-border)]" loading="lazy" />
-      </figure>
+      <figure class="mt-8"><img src={image} alt={title} class="w-full rounded-xl border border-[var(--color-border)]" loading="lazy" /></figure>
     )}
-
-    <!-- Table of Contents + Content -->
     <div class="mt-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <!-- TOC (desktop) -->
       <aside class="lg:col-span-1 hidden lg:block sticky top-24 self-start">
         <TableOfContents headings={headings} />
       </aside>
-
-      <!-- Article body -->
       <div class="lg:col-span-3 prose prose-lg max-w-none prose-headings:font-semibold prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline prose-code:bg-[var(--color-bg-secondary)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-0.5 prose-blockquote:pl-4 [&_img]:rounded-lg [&_img]:border [&_img]:border-[var(--color-border)]">
         <slot name="content" />
       </div>
     </div>
-
-    <!-- Mobile TOC -->
     <div class="lg:hidden mt-8">
       <details>
         <summary class="cursor-pointer font-semibold text-[var(--color-text-primary)]">Table of Contents</summary>
         <TableOfContents headings={headings} />
       </details>
     </div>
-
-    <!-- Author Box -->
-    <AuthorBox author={author} />
-
-    <!-- Related Posts -->
-    {relatedPosts && relatedPosts.length > 0 && (
-      <RelatedPosts posts={relatedPosts} />
-    )}
-
-    <!-- Newsletter -->
+    <AuthorBox {author} />
+    {relatedPosts && relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
     <Newsletter />
   </article>
 </BaseLayout>

@@ -1,0 +1,31 @@
+---
+// src/pages/tools/index.astro
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+
+// Note: You can eventually move this to a Content Collection, but a static array is perfect for starting out.
+const tools = [
+  { name: 'ChatGPT', category: 'AI Assistant', tags: ['Writing', 'Coding'], url: '#' },
+  { name: 'Cursor', category: 'Developer Tool', tags: ['Coding', 'AI'], url: '#' },
+  { name: 'Midjourney', category: 'Design', tags: ['Image Generation'], url: '#' }
+];
+---
+
+<BaseLayout title="AI Tools Directory" description="Curated AI tools that actually improve an engineer's workflow.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">AI Tools</h1>
+    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">The highest-leverage tools for development, research, and productivity.</p>
+    
+    <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {tools.map(tool => (
+        <div class="p-5 border border-[var(--color-border)] rounded-xl bg-[var(--color-bg)] flex flex-col h-full">
+          <h3 class="text-lg font-bold text-[var(--color-text-primary)]">{tool.name}</h3>
+          <p class="text-sm text-[var(--color-text-secondary)] mt-1">{tool.category}</p>
+          <div class="mt-auto pt-4 flex items-center justify-between">
+            <span class="text-xs text-[var(--color-text-muted)]">{tool.tags.join(' · ')}</span>
+            <a href={tool.url} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-[var(--color-accent)] hover:underline">Visit →</a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

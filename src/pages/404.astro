@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+---
+
+<BaseLayout title="Page Not Found" description="The page you are looking for does not exist.">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+    <h1 class="text-6xl font-bold text-[var(--color-text-primary)]">404</h1>
+    <h2 class="mt-4 text-2xl font-semibold text-[var(--color-text-secondary)]">Page Not Found</h2>
+    <p class="mt-2 text-[var(--color-text-muted)]">
+      The page you are looking for might have been moved, deleted, or never existed.
+    </p>
+    <a href="/" class="mt-6 inline-block px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">
+      Return Home
+    </a>
+  </div>
+</BaseLayout>

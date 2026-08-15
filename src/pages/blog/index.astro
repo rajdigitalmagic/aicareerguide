@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import ArticleCard from '@/components/cards/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sorted = allPosts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const categories = ['All', 'AI', 'Career', 'Projects', 'Technology'];
+const currentCategory = 'All'; // later add query param filtering
+---
+
+<BaseLayout title="Blog – Practical AI & Career Insights" description="Articles on AI, technology, careers, and projects.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Blog</h1>
+    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Practical knowledge for AI and technology careers.</p>
+
+    <!-- Category filter (static for now) -->
+    <div class="mt-6 flex flex-wrap gap-2">
+      {categories.map(cat => (
+        <button class={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${cat === currentCategory ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]'}`}>
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {sorted.map(post => <ArticleCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>

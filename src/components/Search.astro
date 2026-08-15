@@ -1,83 +1,149 @@
 ---
-// This component uses Fuse.js. It will be hydrated on load.
+// src/components/Search.astro
+import { Search as SearchIcon, Loader2 } from 'lucide-astro';
 ---
 
 <div class="relative" id="search-container">
-  <input
-    type="text"
-    id="search-input"
-    placeholder="Search articles..."
-    class="w-48 sm:w-64 px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-colors text-sm"
-    aria-label="Search"
-  />
-  <div id="search-results" class="absolute right-0 mt-2 w-72 max-h-96 overflow-y-auto bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg shadow-lg hidden"></div>
+  <!-- Search Input Area -->
+  <div class="relative flex items-center">
+    <SearchIcon class="absolute left-3 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" />
+    <input
+      type="text"
+      id="search-input"
+      placeholder="Search... (Ctrl+K)"
+      class="w-48 sm:w-64 pl-9 pr-8 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-all text-sm"
+      aria-label="Search"
+      autocomplete="off"
+    />
+    <Loader2 id="search-loading" class="absolute right-3 w-4 h-4 text-[var(--color-text-muted)] animate-spin hidden" />
+  </div>
+
+  <!-- Search Results Dropdown -->
+  <div 
+    id="search-results" 
+    class="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-h-[60vh] overflow-y-auto bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl shadow-xl hidden z-50"
+  >
+    <!-- Results are dynamically injected here -->
+  </div>
 </div>
 
 <script>
   import Fuse from 'fuse.js';
-  
-  let fuse = null;
-  const input = document.getElementById('search-input');
+
+  let fuse: Fuse<any> | null = null;
+  let isLoading = false;
+
+  const input = document.getElementById('search-input') as HTMLInputElement;
   const container = document.getElementById('search-container');
   const resultsEl = document.getElementById('search-results');
+  const loadingEl = document.getElementById('search-loading');
 
+  // Keyboard shortcut support (Ctrl+K or Cmd+K)
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      input?.focus();
+    }
+  });
+
+  // Lazy-load the search index only when the user interacts with the search bar
   async function loadIndex() {
-    const res = await fetch('/search-index.json');
-    const data = await res.json();
-    fuse = new Fuse(data, {
-      keys: ['title', 'description', 'category', 'tags'],
-      threshold: 0.3,
-      includeScore: true,
-    });
+    if (fuse || isLoading) return;
+    
+    isLoading = true;
+    loadingEl?.classList.remove('hidden');
+    
+    try {
+      const res = await fetch('/search-index.json');
+      if (!res.ok) throw new Error('Network response was not ok');
+      const data = await res.json();
+      
+      fuse = new Fuse(data, {
+        keys: [
+          { name: 'title', weight: 2 }, // Prioritize title matches
+          { name: 'description', weight: 1 },
+          { name: 'category', weight: 1.5 },
+          { name: 'tags', weight: 1.5 }
+        ],
+        threshold: 0.3,
+        includeScore: true,
+        ignoreLocation: true // Helps find matches anywhere in the string
+      });
+    } catch (error) {
+      console.error('Failed to load search index:', error);
+    } finally {
+      isLoading = false;
+      loadingEl?.classList.add('hidden');
+    }
   }
 
-  function render(results) {
+  // Render the search results into the dropdown
+  function render(results: any[]) {
+    if (!resultsEl) return;
+
     if (!results.length) {
-      resultsEl.innerHTML = '<div class="p-3 text-sm text-[var(--color-text-muted)]">No results</div>';
+      resultsEl.innerHTML = '<div class="p-4 text-sm text-center text-[var(--color-text-muted)]">No results found.</div>';
       resultsEl.classList.remove('hidden');
       return;
     }
+
     let html = '<ul class="divide-y divide-[var(--color-border)]">';
+    
+    // Limit to top 6 results to keep the UI clean
     results.slice(0, 6).forEach(({ item }) => {
+      const tagsHtml = item.tags && item.tags.length > 0 
+        ? `<span class="opacity-50">•</span> <span>${item.tags.slice(0, 2).join(', ')}</span>` 
+        : '';
+
       html += `
         <li>
-          <a href="${item.url}" class="block p-3 hover:bg-[var(--color-bg-secondary)] transition-colors">
-            <div class="text-sm font-medium text-[var(--color-text-primary)]">${item.title}</div>
-            <div class="text-xs text-[var(--color-text-muted)]">${item.category} · ${item.tags?.join(', ') || ''}</div>
+          <a href="${item.url}" class="block p-4 hover:bg-[var(--color-bg-secondary)] transition-colors">
+            <div class="text-sm font-bold text-[var(--color-text-primary)] truncate">${item.title}</div>
+            <div class="text-xs text-[var(--color-text-muted)] mt-1 flex items-center gap-1.5 truncate">
+              <span class="text-[var(--color-accent)] font-semibold uppercase tracking-wider">${item.category}</span>
+              ${tagsHtml}
+            </div>
           </a>
         </li>
       `;
     });
+    
     html += '</ul>';
     resultsEl.innerHTML = html;
     resultsEl.classList.remove('hidden');
   }
 
-  input.addEventListener('focus', async () => {
-    if (!fuse) await loadIndex();
-    const query = input.value.trim();
-    if (query) {
-      const results = fuse.search(query);
-      render(results);
-    } else {
-      resultsEl.classList.add('hidden');
-    }
-  });
+  // Event Listeners
+  input?.addEventListener('focus', loadIndex);
 
-  input.addEventListener('input', async () => {
-    if (!fuse) await loadIndex();
-    const query = input.value.trim();
+  input?.addEventListener('input', async (e) => {
+    await loadIndex(); // Ensure the index is loaded before searching
+    const target = e.target as HTMLInputElement;
+    const query = target.value.trim();
+
     if (!query) {
-      resultsEl.classList.add('hidden');
+      resultsEl?.classList.add('hidden');
       return;
     }
-    const results = fuse.search(query);
-    render(results);
+
+    if (fuse) {
+      const results = fuse.search(query);
+      render(results);
+    }
   });
 
+  // Close the search dropdown if the user clicks anywhere outside of it
   document.addEventListener('click', (e) => {
-    if (!container.contains(e.target)) {
-      resultsEl.classList.add('hidden');
+    if (container && !container.contains(e.target as Node)) {
+      resultsEl?.classList.add('hidden');
+    }
+  });
+
+  // Close the search dropdown on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      resultsEl?.classList.add('hidden');
+      input?.blur();
     }
   });
 </script>

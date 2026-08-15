@@ -1,3 +1,4 @@
+// src/content/config.ts
 import { defineCollection, z } from 'astro:content';
 
 const blogSchema = z.object({
@@ -22,13 +23,19 @@ const roadmapSchema = z.object({
   image: z.string().optional(),
 });
 
+const projectSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
+  timeToBuild: z.string(),
+  techStack: z.array(z.string()),
+  githubUrl: z.string().url().optional(),
+  demoUrl: z.string().url().optional(),
+  draft: z.boolean().default(false),
+});
+
 export const collections = {
-  blog: defineCollection({
-    type: 'content',
-    schema: blogSchema,
-  }),
-  roadmaps: defineCollection({
-    type: 'content',
-    schema: roadmapSchema,
-  }),
+  blog: defineCollection({ type: 'content', schema: blogSchema }),
+  roadmaps: defineCollection({ type: 'content', schema: roadmapSchema }),
+  projects: defineCollection({ type: 'content', schema: projectSchema }),
 };

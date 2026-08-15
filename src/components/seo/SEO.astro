@@ -14,21 +14,23 @@ const img = image || '/images/og-default.jpg';
 const url = canonical || Astro.url.href;
 ---
 
+<title>{fullTitle}</title>
+<meta name="description" content={desc} />
+<link rel="canonical" href={url} />
+
+<!-- Open Graph -->
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={desc} />
 <meta property="og:image" content={new URL(img, Astro.site).href} />
 <meta property="og:url" content={url} />
+{article && <meta property="og:type" content="article" />}
+
+<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={desc} />
 <meta name="twitter:image" content={new URL(img, Astro.site).href} />
-<link rel="canonical" href={url} />
-{article && <meta property="og:type" content="article" />}
-{title && <title>{fullTitle}</title>}
-{!title && <title>{siteTitle}</title>}
-{desc && <meta name="description" content={desc} />}
 
-<!-- JSON-LD for articles if needed -->
 {article && (
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",

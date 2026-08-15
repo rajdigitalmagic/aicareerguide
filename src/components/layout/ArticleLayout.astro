@@ -17,7 +17,6 @@ export interface Props {
   readingTime?: string;
   headings: { depth: number; slug: string; text: string }[];
   relatedPosts?: any[];
-  content: any; // not used directly, we use <slot name="content" />
 }
 
 const { title, description, pubDate, author, category, tags, image, readingTime, headings, relatedPosts } = Astro.props;

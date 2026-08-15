@@ -14,7 +14,6 @@ const currentCategory = 'All'; // later add query param filtering
     <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Blog</h1>
     <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Practical knowledge for AI and technology careers.</p>
 
-    <!-- Category filter (static for now) -->
     <div class="mt-6 flex flex-wrap gap-2">
       {categories.map(cat => (
         <button class={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${cat === currentCategory ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]'}`}>

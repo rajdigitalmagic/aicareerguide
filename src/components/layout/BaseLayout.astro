@@ -22,15 +22,7 @@ const { title, description, image, canonical, article = false } = Astro.props;
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <style is:global>
-    /* Theme no-flash script */
-    (function () {
-      const stored = localStorage.getItem('theme');
-      const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      const theme = stored || system;
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-    })();
-  </style>
+  <link rel="stylesheet" href="/styles/global.css" />
 </head>
 <body class="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
   <Header />

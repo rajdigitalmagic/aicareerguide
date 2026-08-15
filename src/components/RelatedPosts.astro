@@ -1,14 +1,51 @@
 ---
-const { posts } = Astro.props as { posts: any[] };
+// src/components/RelatedPosts.astro
+import { Calendar, Clock } from 'lucide-astro';
+
+export interface Props {
+  posts: any[];
+}
+
+const { posts = [] } = Astro.props;
 ---
-<section class="mt-12 border-t border-[var(--color-border)] pt-8">
-  <h3 class="text-xl font-bold text-[var(--color-text-primary)]">Related Articles</h3>
-  <div class="mt-4 grid gap-4 md:grid-cols-3">
-    {posts.map(post => (
-      <a href={`/blog/${post.slug}`} class="block p-4 border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors">
-        <h4 class="font-semibold text-[var(--color-text-primary)]">{post.data.title}</h4>
-        <p class="text-sm text-[var(--color-text-muted)]">{post.data.category}</p>
-      </a>
-    ))}
-  </div>
-</section>
+
+{posts.length > 0 && (
+  <section class="mt-16 pt-8 border-t border-[var(--color-border)]">
+    <h3 class="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Read Next</h3>
+    
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => (
+        <a 
+          href={`/blog/${post.slug}`} 
+          class="group flex flex-col justify-between p-5 border border-[var(--color-border)] rounded-xl hover:shadow-md hover:border-[var(--color-accent)] bg-[var(--color-bg)] transition-all"
+        >
+          <div>
+            <span class="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wider">
+              {post.data.category}
+            </span>
+            <h4 class="mt-2 text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-2">
+              {post.data.title}
+            </h4>
+            <p class="mt-2 text-sm text-[var(--color-text-secondary)] line-clamp-2">
+              {post.data.description}
+            </p>
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-[var(--color-border)] flex items-center justify-between text-xs text-[var(--color-text-muted)]">
+            <span class="flex items-center gap-1.5">
+              <Calendar class="w-3.5 h-3.5" />
+              {post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+            
+            {post.data.readingTime && (
+              <span class="flex items-center gap-1.5">
+                <Clock class="w-3.5 h-3.5" />
+                {post.data.readingTime} min
+              </span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+)}

@@ -55,7 +55,15 @@ import Search from '@/components/Search.astro';
   const btn = document.getElementById('mobile-menu-btn');
   const nav = document.getElementById('mobile-nav');
 
+  // Toggle menu on click
   btn?.addEventListener('click', () => {
     nav?.classList.toggle('hidden');
+  });
+
+  // Automatically hide the mobile menu if the screen resizes to desktop width
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) { // 768px is the 'md' breakpoint in Tailwind
+      nav?.classList.add('hidden');
+    }
   });
 </script>

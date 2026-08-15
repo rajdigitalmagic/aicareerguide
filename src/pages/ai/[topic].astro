@@ -1,0 +1,59 @@
+---
+// src/pages/ai/[topic].astro
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import ArticleCard from '@/components/cards/ArticleCard.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const topics = [
+    { slug: 'ml', title: 'Machine Learning', description: 'Dive deep into algorithms, models, and predictive analytics.' },
+    { slug: 'llms', title: 'Large Language Models', description: 'Understand the architecture and application of transformers and LLMs.' },
+    { slug: 'gen-ai', title: 'Generative AI', description: 'Explore systems that generate text, images, and code.' },
+    { slug: 'ai-engineering', title: 'AI Engineering', description: 'Learn how to deploy and scale AI systems in production.' }
+  ];
+
+  return topics.map(topic => ({
+    params: { topic: topic.slug },
+    props: { topic },
+  }));
+}
+
+const { topic } = Astro.props;
+
+// Fetch all published blog posts
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+// Filter the posts to only show ones relevant to this specific topic.
+// This looks for a tag matching the topic slug (e.g., "ml", "llms") or falls back to showing all "AI" category posts if no tags match yet.
+const filteredPosts = allPosts.filter(post => {
+  const hasMatchingTag = post.data.tags?.some(tag => tag.toLowerCase() === topic.slug);
+  return hasMatchingTag || post.data.category === 'AI'; 
+});
+
+const breadcrumbItems = [
+  { label: 'Home', url: '/' },
+  { label: 'AI', url: '/ai' },
+  { label: topic.title, url: `/ai/${topic.slug}` }
+];
+---
+
+<BaseLayout title={`${topic.title} | AI Career Guide`} description={topic.description}>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <Breadcrumbs items={breadcrumbItems} />
+    
+    <h1 class="text-4xl font-bold text-[var(--color-text-primary)] mt-4">{topic.title}</h1>
+    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">{topic.description}</p>
+    
+    <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {filteredPosts.length > 0 ? (
+        filteredPosts.map(post => <ArticleCard post={post} />)
+      ) : (
+        <div class="col-span-full py-12 text-center border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-secondary)]">
+          <p class="text-[var(--color-text-muted)]">Content for {topic.title} is currently being engineered. Check back soon.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>

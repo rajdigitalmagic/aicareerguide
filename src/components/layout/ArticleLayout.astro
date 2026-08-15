@@ -1,11 +1,12 @@
 ---
+// src/components/layout/ArticleLayout.astro
 import BaseLayout from './BaseLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import RelatedPosts from '@/components/RelatedPosts.astro';
 import AuthorBox from '@/components/AuthorBox.astro';
 import ShareButtons from '@/components/ShareButtons.astro';
 import Newsletter from '@/components/common/Newsletter.astro';
-import Breadcrumbs from '@/components/seo/Breadcrumbs.astro'; // 1. Added Import
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 
 export interface Props {
   title: string;
@@ -13,69 +14,155 @@ export interface Props {
   pubDate: Date;
   author: string;
   category: string;
-  tags: string[];
+  tags?: string[];
   image?: string;
   readingTime?: string;
   headings: { depth: number; slug: string; text: string }[];
   relatedPosts?: any[];
 }
 
-const { title, description, pubDate, author, category, tags, image, readingTime, headings, relatedPosts } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  author,
+  category,
+  tags = [],
+  image,
+  readingTime,
+  headings = [],
+  relatedPosts = []
+} = Astro.props;
 
-// 2. Added dynamic breadcrumb generation
 const breadcrumbItems = [
   { label: 'Home', url: '/' },
   { label: 'Blog', url: '/blog' },
-  { label: category, url: `/blog?category=${category.toLowerCase()}` },
+  { label: category, url: `/blog?category=${encodeURIComponent(category.toLowerCase())}` },
   { label: title, url: Astro.url.pathname }
 ];
 ---
 
-<BaseLayout title={title} description={description} image={image} canonical={Astro.url.pathname} article={true}>
-  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    
-    <!-- 3. Added Breadcrumbs UI -->
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  canonical={Astro.url.pathname}
+  article={true}
+>
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <!-- Breadcrumb Trail -->
     <Breadcrumbs items={breadcrumbItems} />
-    
-    <!-- I added a slight top margin (mt-4) here to space it from the breadcrumbs -->
-    <div class="text-sm font-semibold text-[var(--color-accent)] uppercase tracking-wide mb-2 mt-4">{category}</div>
-    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] leading-tight">{title}</h1>
-    <p class="text-xl text-[var(--color-text-secondary)] mt-4">{description}</p>
-    <div class="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-muted)] mt-4">
-      <span>{author}</span><span>·</span>
-      <time datetime={pubDate.toISOString()}>{pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-      {readingTime && <><span>·</span><span>{readingTime} min read</span></>}
-    </div>
-    <div class="mt-4"><ShareButtons url={Astro.url.href} title={title} /></div>
+
+    <!-- Article Header Metadata -->
+    <header class="mt-4">
+      <div class="inline-block text-xs md:text-sm font-semibold text-[var(--color-accent)] uppercase tracking-wider bg-[var(--color-bg-secondary)] px-3 py-1 rounded-md border border-[var(--color-border)]">
+        {category}
+      </div>
+      
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] leading-tight tracking-tight mt-4">
+        {title}
+      </h1>
+      
+      <p class="text-lg sm:text-xl text-[var(--color-text-secondary)] mt-4 leading-relaxed">
+        {description}
+      </p>
+
+      <div class="flex flex-wrap items-center gap-3 text-sm text-[var(--color-text-muted)] mt-6 border-b border-[var(--color-border)] pb-6">
+        <span class="font-medium text-[var(--color-text-primary)]">{author}</span>
+        <span>•</span>
+        <time datetime={pubDate.toISOString()}>
+          {pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </time>
+        {readingTime && (
+          <>
+            <span>•</span>
+            <span>{readingTime} min read</span>
+          </>
+        )}
+      </div>
+
+      <div class="mt-4 flex items-center justify-between">
+        <ShareButtons url={Astro.url.href} title={title} />
+      </div>
+    </header>
+
+    <!-- Optional Hero Image -->
     {image && (
-      <figure class="mt-8"><img src={image} alt={title} class="w-full rounded-xl border border-[var(--color-border)]" loading="lazy" /></figure>
+      <figure class="mt-8">
+        <img
+          src={image}
+          alt={title}
+          class="w-full max-h-[480px] object-cover rounded-2xl border border-[var(--color-border)] shadow-sm"
+          loading="eager"
+        />
+      </figure>
     )}
-    <div class="mt-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <aside class="lg:col-span-1 hidden lg:block sticky top-24 self-start">
-        <TableOfContents headings={headings} />
-      </aside>
-      <div class="lg:col-span-3 prose prose-lg max-w-none 
-        text-[var(--color-text-secondary)]
-        prose-headings:text-[var(--color-text-primary)] prose-headings:font-semibold 
-        prose-p:text-[var(--color-text-secondary)]
-        prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline 
-        prose-strong:text-[var(--color-text-primary)]
-        prose-code:text-[var(--color-text-primary)] prose-code:bg-[var(--color-bg-secondary)] prose-code:px-1 prose-code:rounded prose-code:before:hidden prose-code:after:hidden
-        prose-pre:bg-[var(--color-bg-secondary)] prose-pre:text-[var(--color-text-primary)] prose-pre:border prose-pre:border-[var(--color-border)]
-        prose-blockquote:text-[var(--color-text-muted)] prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-0.5 prose-blockquote:pl-4 
-        prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]
-        [&_img]:rounded-lg [&_img]:border [&_img]:border-[var(--color-border)]">
-        <slot name="content" />
+
+    <!-- Mobile Collapsible Table of Contents -->
+    {headings.length > 0 && (
+      <div class="lg:hidden mt-8 border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-secondary)] p-4">
+        <details class="group">
+          <summary class="flex items-center justify-between cursor-pointer font-semibold text-[var(--color-text-primary)] list-none">
+            <span>Table of Contents</span>
+            <span class="transition group-open:rotate-180">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </summary>
+          <div class="mt-4 pt-4 border-t border-[var(--color-border)]">
+            <TableOfContents headings={headings} />
+          </div>
+        </details>
+      </div>
+    )}
+
+    <!-- Main Grid: Sticky Sidebar TOC + Markdown Content -->
+    <div class="mt-10 grid grid-cols-1 lg:grid-cols-4 gap-12">
+      <!-- Desktop Sidebar TOC -->
+      {headings.length > 0 && (
+        <aside class="hidden lg:block lg:col-span-1">
+          <div class="sticky top-24 self-start border-l-2 border-[var(--color-border)] pl-4">
+            <TableOfContents headings={headings} />
+          </div>
+        </aside>
+      )}
+
+      <!-- Markdown / MDX Content Slot -->
+      <div class:list={[
+        "prose prose-lg max-w-none text-[var(--color-text-secondary)]",
+        headings.length > 0 ? "lg:col-span-3" : "lg:col-span-4",
+        "prose-headings:text-[var(--color-text-primary)] prose-headings:font-bold",
+        "prose-p:text-[var(--color-text-secondary)] prose-p:leading-relaxed",
+        "prose-a:text-[var(--color-accent)] prose-a:font-medium prose-a:no-underline hover:prose-a:underline",
+        "prose-strong:text-[var(--color-text-primary)]",
+        "prose-code:text-[var(--color-text-primary)] prose-code:bg-[var(--color-bg-secondary)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:hidden prose-code:after:hidden",
+        "prose-pre:bg-[var(--color-bg-secondary)] prose-pre:text-[var(--color-text-primary)] prose-pre:border prose-pre:border-[var(--color-border)] prose-pre:rounded-xl",
+        "prose-blockquote:text-[var(--color-text-muted)] prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg",
+        "prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]",
+        "[&_img]:rounded-xl [&_img]:border [&_img]:border-[var(--color-border)]"
+      ]}>
+        <slot />
       </div>
     </div>
-    <div class="lg:hidden mt-8">
-      <details>
-        <summary class="cursor-pointer font-semibold text-[var(--color-text-primary)]">Table of Contents</summary>
-        <TableOfContents headings={headings} />
-      </details>
+
+    <!-- Tags Display -->
+    {tags && tags.length > 0 && (
+      <div class="mt-12 pt-6 border-t border-[var(--color-border)] flex flex-wrap items-center gap-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mr-2">Tags:</span>
+        {tags.map(tag => (
+          <span class="px-3 py-1 text-xs rounded-full bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
+
+    <!-- Author, Related Articles, and Newsletter -->
+    <AuthorBox author={author} />
+    {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
+    <div class="mt-14">
+      <Newsletter />
     </div>
-    <AuthorBox {author} />
-    {relatedPosts && relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
-    <Newsletter />
   </article>
 </BaseLayout>

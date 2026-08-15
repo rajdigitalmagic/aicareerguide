@@ -86,14 +86,15 @@ const breadcrumbItems = [
       </div>
     </header>
 
-    <!-- Optional Hero Image -->
+    <!-- Optimized Hero Image -->
     {image && (
-      <figure class="mt-8">
+      <figure class="mt-8 mb-10 overflow-hidden rounded-2xl border border-[var(--color-border)] shadow-sm bg-[var(--color-bg-secondary)]">
         <img
           src={image}
-          alt={title}
-          class="w-full max-h-[480px] object-cover rounded-2xl border border-[var(--color-border)] shadow-sm"
+          alt={title || 'Article hero image'}
+          class="w-full h-auto object-cover max-h-[500px]"
           loading="eager"
+          decoding="async"
         />
       </figure>
     )}

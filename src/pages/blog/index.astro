@@ -1,29 +1,102 @@
 ---
+// src/pages/blog/index.astro
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import ArticleCard from '@/components/cards/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sorted = allPosts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
 const categories = ['All', 'AI', 'Career', 'Projects', 'Technology'];
-const currentCategory = 'All'; // later add query param filtering
 ---
 
-<BaseLayout title="Blog – Practical AI & Career Insights" description="Articles on AI, technology, careers, and projects.">
+<BaseLayout title="Blog | Practical AI & Career Insights" description="Articles on AI, technology, careers, and projects.">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Blog</h1>
     <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Practical knowledge for AI and technology careers.</p>
-
-    <div class="mt-6 flex flex-wrap gap-2">
+    
+    <!-- Category Filter Buttons -->
+    <div class="mt-6 flex flex-wrap gap-2" id="category-filters">
       {categories.map(cat => (
-        <button class={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${cat === currentCategory ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]'}`}>
+        <button 
+          data-filter={cat.toLowerCase()} 
+          class="filter-btn px-4 py-1 rounded-full text-sm font-medium transition-colors bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
+        >
           {cat}
         </button>
       ))}
     </div>
 
-    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <!-- Article Grid -->
+    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="articles-grid">
       {sorted.map(post => <ArticleCard post={post} />)}
     </div>
+    
+    <!-- Empty State -->
+    <div id="no-articles-msg" class="hidden mt-8 text-center py-12 border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-secondary)]">
+      <p class="text-[var(--color-text-muted)]">No articles found for this category yet.</p>
+    </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const articles = document.querySelectorAll('.article-card');
+      const noArticlesMsg = document.getElementById('no-articles-msg');
+      
+      // Get category from URL if it exists (e.g., /blog?category=ai)
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialFilter = urlParams.get('category') || 'all';
+
+      function applyFilter(filterValue) {
+        let visibleCount = 0;
+
+        // Update active button styling
+        filterBtns.forEach(btn => {
+          if (btn.getAttribute('data-filter') === filterValue) {
+            btn.classList.add('bg-[var(--color-accent)]', 'text-white');
+            btn.classList.remove('bg-[var(--color-bg-secondary)]', 'text-[var(--color-text-secondary)]');
+          } else {
+            btn.classList.remove('bg-[var(--color-accent)]', 'text-white');
+            btn.classList.add('bg-[var(--color-bg-secondary)]', 'text-[var(--color-text-secondary)]');
+          }
+        });
+
+        // Filter the articles
+        articles.forEach(article => {
+          const articleCategory = article.getAttribute('data-category');
+          if (filterValue === 'all' || articleCategory === filterValue) {
+            article.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            article.classList.add('hidden');
+          }
+        });
+
+        // Show empty state if nothing matches
+        if (visibleCount === 0) {
+          noArticlesMsg?.classList.remove('hidden');
+        } else {
+          noArticlesMsg?.classList.add('hidden');
+        }
+
+        // Update the URL without reloading the page
+        const newUrl = filterValue === 'all' 
+          ? window.location.pathname 
+          : `${window.location.pathname}?category=${filterValue}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+
+      // Add click events to buttons
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const filterValue = e.target.getAttribute('data-filter');
+          applyFilter(filterValue);
+        });
+      });
+
+      // Apply initial filter on load
+      applyFilter(initialFilter);
+    });
+  </script>
 </BaseLayout>

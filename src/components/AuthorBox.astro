@@ -1,14 +1,44 @@
 ---
-const { author } = Astro.props as { author: string };
+// src/components/AuthorBox.astro
+import { Twitter, Linkedin, Github } from 'lucide-astro';
+
+export interface Props {
+  author: string;
+  bio?: string;
+}
+
+const { 
+  author, 
+  bio = "Building intelligent systems and sharing practical insights on software engineering, algorithmic data structures, and machine learning." 
+} = Astro.props;
 ---
-<div class="mt-12 border-t border-[var(--color-border)] pt-6">
-  <div class="flex items-center gap-4">
-    <div class="w-12 h-12 rounded-full bg-[var(--color-accent)] flex items-center justify-center text-white font-bold text-xl">
+
+<div class="mt-16 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-start gap-6">
+  <!-- Avatar -->
+  <div class="flex-shrink-0">
+    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-hover)] flex items-center justify-center text-white font-bold text-2xl shadow-sm">
       {author.charAt(0)}
     </div>
-    <div>
-      <p class="font-semibold text-[var(--color-text-primary)]">About {author}</p>
-      <p class="text-sm text-[var(--color-text-secondary)]">AI Career Guide – practical AI & career insights.</p>
+  </div>
+  
+  <!-- Bio & Links -->
+  <div class="flex-1">
+    <h3 class="text-lg font-bold text-[var(--color-text-primary)]">{author}</h3>
+    <p class="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">
+      {bio}
+    </p>
+    
+    <!-- Social Links -->
+    <div class="mt-4 flex items-center gap-4">
+      <a href="#" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors" aria-label="Twitter">
+        <Twitter class="w-4 h-4" />
+      </a>
+      <a href="#" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors" aria-label="LinkedIn">
+        <Linkedin class="w-4 h-4" />
+      </a>
+      <a href="#" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors" aria-label="GitHub">
+        <Github class="w-4 h-4" />
+      </a>
     </div>
   </div>
 </div>

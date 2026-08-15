@@ -1,6 +1,5 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
-import mdx from '@astrojs/rss'; // Note: Ensure sitemap and mdx imports match your package setup
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import mdxPlugin from '@astrojs/mdx';

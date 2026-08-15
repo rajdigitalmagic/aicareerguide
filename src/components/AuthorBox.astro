@@ -1,0 +1,14 @@
+---
+const { author } = Astro.props as { author: string };
+---
+<div class="mt-12 border-t border-[var(--color-border)] pt-6">
+  <div class="flex items-center gap-4">
+    <div class="w-12 h-12 rounded-full bg-[var(--color-accent)] flex items-center justify-center text-white font-bold text-xl">
+      {author.charAt(0)}
+    </div>
+    <div>
+      <p class="font-semibold text-[var(--color-text-primary)]">About {author}</p>
+      <p class="text-sm text-[var(--color-text-secondary)]">AI Career Guide – practical AI & career insights.</p>
+    </div>
+  </div>
+</div>

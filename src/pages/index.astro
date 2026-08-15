@@ -8,30 +8,21 @@ import { getCollection } from 'astro:content';
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const featured = posts.slice(0, 3);
 const latest = posts.slice(3, 7);
-
 const categories = [
   { name: 'ML', href: '/ai/ml', icon: '🧠' },
   { name: 'LLMs', href: '/ai/llms', icon: '🤖' },
   { name: 'Gen AI', href: '/ai/gen-ai', icon: '✨' },
   { name: 'AI Eng.', href: '/ai/ai-engineering', icon: '⚙️' },
 ];
-
-const careerPaths = [
-  'AI Engineer', 'ML Engineer', 'Software Engineer',
-  'Data Scientist', 'Researcher', 'AI Product Builder',
-];
+const careerPaths = ['AI Engineer', 'ML Engineer', 'Software Engineer', 'Data Scientist', 'Researcher', 'AI Product Builder'];
 ---
 
-<BaseLayout title="AI Career Guide – Practical AI, Technology & Career Guidance" description="Learn AI, build real projects, and advance your career in tech.">
+<BaseLayout title="Practical AI, Technology & Career Guidance" description="Learn AI, build real projects, and advance your career in tech.">
   <!-- Hero -->
   <section class="bg-[var(--color-bg-secondary)] border-b border-[var(--color-border)] py-16 md:py-24">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--color-text-primary)] leading-tight">
-        Build Your Future in AI
-      </h1>
-      <p class="mt-4 text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto">
-        Learn AI. Build real projects. Build a career that matters.
-      </p>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--color-text-primary)] leading-tight">Build Your Future in AI</h1>
+      <p class="mt-4 text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto">Learn AI. Build real projects. Build a career that matters.</p>
       <div class="mt-8 flex flex-wrap justify-center gap-4">
         <a href="/ai" class="px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">Explore AI →</a>
         <a href="/careers" class="px-6 py-3 border border-[var(--color-border)] text-[var(--color-text-primary)] rounded-lg font-semibold hover:bg-[var(--color-bg-secondary)] transition-colors">Career Roadmaps</a>
@@ -39,13 +30,11 @@ const careerPaths = [
     </div>
   </section>
 
-  <!-- Featured posts -->
+  <!-- Featured -->
   <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Trending / Featured</h2>
     <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {featured.map(post => (
-        <ArticleCard post={post} />
-      ))}
+      {featured.map(post => <ArticleCard post={post} />)}
     </div>
   </section>
 
@@ -53,9 +42,7 @@ const careerPaths = [
   <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Explore AI</h2>
     <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {categories.map(cat => (
-        <CategoryCard category={cat} />
-      ))}
+      {categories.map(cat => <CategoryCard category={cat} />)}
     </div>
   </section>
 
@@ -64,31 +51,26 @@ const careerPaths = [
     <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Career Roadmaps</h2>
     <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
       {careerPaths.map(path => (
-        <a href={`/careers/${path.toLowerCase().replace(/ /g, '-')}`} class="p-4 text-center border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg)] transition-colors text-[var(--color-text-primary)]">
-          {path}
-        </a>
+        <a href={`/careers/${path.toLowerCase().replace(/ /g, '-')}`} class="p-4 text-center border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg)] transition-colors text-[var(--color-text-primary)]">{path}</a>
       ))}
     </div>
   </section>
 
-  <!-- Latest Articles -->
+  <!-- Latest -->
   <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Latest Articles</h2>
     <div class="mt-6 grid gap-6 md:grid-cols-2">
-      {latest.map(post => (
-        <ArticleCard post={post} />
-      ))}
+      {latest.map(post => <ArticleCard post={post} />)}
     </div>
   </section>
 
-  <!-- Build Something -->
+  <!-- Build -->
   <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
     <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Build Something</h2>
     <p class="mt-2 text-[var(--color-text-secondary)]">Practical AI projects from beginner → advanced</p>
     <a href="/projects" class="mt-4 inline-block px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">Explore Projects →</a>
   </section>
 
-  <!-- Newsletter -->
   <section class="py-12 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
     <Newsletter />
   </section>

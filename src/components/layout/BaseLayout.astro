@@ -22,7 +22,10 @@ const { title, description, image, canonical, article = false } = Astro.props;
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles/global.css" />
+  <!-- Instead of <link>, use a style tag to import the global CSS -->
+  <style is:global>
+    @import '/src/styles/global.css';
+  </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
   <Header />

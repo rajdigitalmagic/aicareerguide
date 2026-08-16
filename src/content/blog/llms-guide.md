@@ -6,7 +6,7 @@ author: "AI Career Guide"
 category: "AI"
 topics: ["llms", "generative-ai", "natural-language-processing", "transformers", "ai-engineering"]
 tags: ["LLMs", "large language models", "generative AI", "transformers", "RAG", "fine-tuning", "prompt engineering", "LLM engineering", "AI agents"]
-image: "/images/blog/llms-guide.png"
+image: "/images/blog/llms-guide.webp"
 readingTime: "17"
 featured: false
 draft: false

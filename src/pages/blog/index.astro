@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sorted = [...allPosts].sort((a,b)=>b.data.pubDate.getTime()-a.data.pubDate.getTime());
 const featured = sorted.find(post => post.data.featured) ?? sorted[0];
-const latest = featured ? sorted.filter(post => post.slug !== featured.slug) : sorted;
+const latest = featured && sorted.length > 1 ? sorted.filter(post => post.slug !== featured.slug) : sorted;
 const categories = ['All', 'AI', 'Career', 'Projects', 'Technology'];
 ---
 <BaseLayout title="Blog | AI Career Guide" description="Practical articles on AI, technology, projects, and careers.">

@@ -7,7 +7,7 @@ import AuthorBox from '@/components/AuthorBox.astro';
 import ShareButtons from '@/components/ShareButtons.astro';
 import Newsletter from '@/components/common/Newsletter.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
-import { Image } from 'astro:assets'; // <-- Imported Astro's native Image component
+import { Image } from 'astro:assets'; 
 
 export interface Props {
   title: string;
@@ -133,6 +133,7 @@ const breadcrumbItems = [
       )}
 
       <!-- Markdown / MDX Content Slot -->
+      <!-- Removed all prose-code and prose-pre overrides so Shiki functions properly -->
       <div class:list={[
         "prose prose-lg max-w-none text-[var(--color-text-secondary)]",
         headings.length > 0 ? "lg:col-span-3" : "lg:col-span-4",
@@ -140,33 +141,41 @@ const breadcrumbItems = [
         "prose-p:text-[var(--color-text-secondary)] prose-p:leading-relaxed",
         "prose-a:text-[var(--color-accent)] prose-a:font-medium prose-a:no-underline hover:prose-a:underline",
         "prose-strong:text-[var(--color-text-primary)]",
-        "prose-code:before:hidden prose-code:after:hidden",
         "prose-blockquote:text-[var(--color-text-muted)] prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg",
         "prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]",
         "[&_img]:rounded-xl [&_img]:border [&_img]:border-[var(--color-border)]"
       ]}>
         <slot />
       </div>
+    </div> <!-- /End of Grid -->
 
-    <!-- Tags Display -->
-    {tags && tags.length > 0 && (
-      <div class="mt-12 pt-6 border-t border-[var(--color-border)] flex flex-wrap items-center gap-2">
-        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mr-2">Tags:</span>
-        {tags.map(tag => (
-          <span class="px-3 py-1 text-xs rounded-full bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
-            #{tag}
-          </span>
-        ))}
+    <!-- HARD STRUCTURAL BREAK: This footer prevents the grid from messing up the bottom layout -->
+    <footer class="mt-16 pt-8 clear-both w-full block">
+      <!-- Tags Display -->
+      {tags && tags.length > 0 && (
+        <div class="mb-12 pt-6 border-t border-[var(--color-border)] flex flex-wrap items-center gap-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mr-2">Tags:</span>
+          {tags.map(tag => (
+            <span class="px-3 py-1 text-xs rounded-full bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <!-- Author, Related Articles, and Newsletter -->
+      <AuthorBox author={author} />
+      
+      {relatedPosts.length > 0 && (
+        <div class="mt-12">
+          <RelatedPosts posts={relatedPosts} />
+        </div>
+      )}
+      
+      <div class="mt-14">
+        <Newsletter />
       </div>
-    )}
-
-    <!-- Author, Related Articles, and Newsletter -->
-    <AuthorBox author={author} />
-    {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
-    
-    <div class="mt-14">
-      <Newsletter />
-    </div>
+    </footer>
   </article>
 
   <script>
@@ -178,22 +187,21 @@ const breadcrumbItems = [
         // Mark as processed to prevent duplicate wrappers during view transitions
         pre.classList.add('code-processed');
         
-        // 1. Create a positioning wrapper
+        // 1. Create a positioning wrapper (Removed background color to respect Shiki)
         const wrapper = document.createElement('div');
-        wrapper.className = 'relative flex flex-col mt-8 mb-8 shadow-sm rounded-xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-secondary)]';
+        wrapper.className = 'relative flex flex-col mt-8 mb-8 shadow-sm rounded-xl overflow-hidden border border-[var(--color-border)]';
         
         // Wrap the <pre> element
         pre.parentNode?.insertBefore(wrapper, pre);
         wrapper.appendChild(pre);
         
-        // Strip existing margins/borders from the <pre> so the wrapper controls it
+        // Strip existing margins/borders from the <pre>, but retain background & padding
         pre.classList.add('!mt-0', '!mb-0', '!border-0', '!rounded-none');
         
         // 2. Determine the language
-        // Astro's Shiki automatically injects the data-language attribute
         const language = pre.getAttribute('data-language') || 'Code';
         
-        // 3. Create the Header Bar
+        // 3. Create the Header Bar with generic secondary background
         const header = document.createElement('div');
         header.className = 'flex items-center justify-between px-4 py-2.5 bg-[var(--color-bg-secondary)] text-xs font-mono text-[var(--color-text-secondary)] border-b border-[var(--color-border)]';
         
@@ -219,19 +227,16 @@ const breadcrumbItems = [
         
         // 4. Implement Copy Functionality
         copyBtn.addEventListener('click', async () => {
-          // Get the raw text from the <code> tag inside the <pre>
           const codeText = pre.querySelector('code')?.innerText || (pre as HTMLElement).innerText;
           
           try {
             await navigator.clipboard.writeText(codeText);
             
-            // Visual success feedback
             copyBtn.innerHTML = `
               <svg class="w-4 h-4 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
               <span class="text-[var(--color-accent)] font-medium">Copied!</span>
             `;
             
-            // Reset button after 2 seconds
             setTimeout(() => {
               copyBtn.innerHTML = `
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
@@ -247,10 +252,7 @@ const breadcrumbItems = [
       });
     }
 
-    // Run on standard initial page load
     document.addEventListener('DOMContentLoaded', setupCodeBlocks);
-    
-    // Run on Astro View Transitions navigation (if enabled in the future)
     document.addEventListener('astro:page-load', setupCodeBlocks);
   </script>
 </BaseLayout>

@@ -11,7 +11,7 @@ export async function GET() {
       title: post.data.title,
       description: post.data.description,
       category: post.data.category,
-      tags: post.data.tags || [],
+      tags: [...(post.data.tags || []), ...(post.data.topics || [])],
       url: `/blog/${post.slug}/`,
     })),
     ...projects.map(proj => ({

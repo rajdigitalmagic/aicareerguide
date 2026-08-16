@@ -7,6 +7,7 @@ import AuthorBox from '@/components/AuthorBox.astro';
 import ShareButtons from '@/components/ShareButtons.astro';
 import Newsletter from '@/components/common/Newsletter.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import { Image } from 'astro:assets'; // <-- Imported Astro's native Image component
 
 export interface Props {
   title: string;
@@ -89,9 +90,11 @@ const breadcrumbItems = [
     <!-- Optimized Hero Image -->
     {image && (
       <figure class="mt-8 mb-10 overflow-hidden rounded-2xl border border-[var(--color-border)] shadow-sm bg-[var(--color-bg-secondary)]">
-        <img
+        <Image
           src={image}
           alt={title || 'Article hero image'}
+          width={1200}
+          height={630}
           class="w-full h-auto object-cover max-h-[500px]"
           loading="eager"
           decoding="async"
@@ -162,91 +165,94 @@ const breadcrumbItems = [
     <!-- Author, Related Articles, and Newsletter -->
     <AuthorBox author={author} />
     {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
+    
     <div class="mt-14">
       <Newsletter />
     </div>
   </article>
-    <script>
-      function setupCodeBlocks() {
-        // Find all code blocks that haven't been processed yet
-        const codeBlocks = document.querySelectorAll('.prose pre:not(.code-processed)');
-        
-        codeBlocks.forEach((pre) => {
-          // Mark as processed to prevent duplicate wrappers during view transitions
-          pre.classList.add('code-processed');
-          
-          // 1. Create a positioning wrapper
-          const wrapper = document.createElement('div');
-          wrapper.className = 'relative flex flex-col mt-8 mb-8 shadow-sm rounded-xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-secondary)]';
-          
-          // Wrap the <pre> element
-          pre.parentNode?.insertBefore(wrapper, pre);
-          wrapper.appendChild(pre);
-          
-          // Strip existing margins/borders from the <pre> so the wrapper controls it
-          pre.classList.add('!mt-0', '!mb-0', '!border-0', '!rounded-none');
-          
-          // 2. Determine the language
-          // Astro's Shiki automatically injects the data-language attribute
-          const language = pre.getAttribute('data-language') || 'Code';
-          
-          // 3. Create the Header Bar
-          const header = document.createElement('div');
-          header.className = 'flex items-center justify-between px-4 py-2 bg-[var(--color-border)] text-xs font-mono text-[var(--color-text-secondary)] border-b border-[var(--color-border)]';
-          
-          // Language Indicator
-          const langSpan = document.createElement('span');
-          langSpan.textContent = language.toUpperCase();
-          langSpan.className = 'font-semibold tracking-wider';
-          
-          // Copy Button
-          const copyBtn = document.createElement('button');
-          copyBtn.className = 'flex items-center gap-1.5 hover:text-[var(--color-text-primary)] transition-colors focus:outline-none';
-          copyBtn.innerHTML = `
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-            <span>Copy</span>
-          `;
-          
-          // Assemble the header
-          header.appendChild(langSpan);
-          header.appendChild(copyBtn);
-          
-          // Insert the header at the top of the wrapper
-          wrapper.insertBefore(header, pre);
-          
-          // 4. Implement Copy Functionality
-          copyBtn.addEventListener('click', async () => {
-            // Get the raw text from the <code> tag inside the <pre>
-            const codeText = pre.querySelector('code')?.innerText || pre.innerText;
-            
-            try {
-              await navigator.clipboard.writeText(codeText);
-              
-              // Visual success feedback
-              copyBtn.innerHTML = `
-                <svg class="w-4 h-4 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span class="text-[var(--color-accent)] font-medium">Copied!</span>
-              `;
-              
-              // Reset button after 2 seconds
-              setTimeout(() => {
-                copyBtn.innerHTML = `
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                  <span>Copy</span>
-                `;
-              }, 2000);
-            } catch (err) {
-              console.error('Failed to copy code snippet: ', err);
-              copyBtn.querySelector('span').textContent = 'Error';
-            }
-          });
-        });
-      }
 
-      // Run on standard initial page load
-      document.addEventListener('DOMContentLoaded', setupCodeBlocks);
+  <script>
+    function setupCodeBlocks() {
+      // Find all code blocks that haven't been processed yet
+      const codeBlocks = document.querySelectorAll('.prose pre:not(.code-processed)');
       
-      // Run on Astro View Transitions navigation (if enabled in the future)
-      document.addEventListener('astro:page-load', setupCodeBlocks);
-    </script>
+      codeBlocks.forEach((pre) => {
+        // Mark as processed to prevent duplicate wrappers during view transitions
+        pre.classList.add('code-processed');
+        
+        // 1. Create a positioning wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative flex flex-col mt-8 mb-8 shadow-sm rounded-xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-secondary)]';
+        
+        // Wrap the <pre> element
+        pre.parentNode?.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+        
+        // Strip existing margins/borders from the <pre> so the wrapper controls it
+        pre.classList.add('!mt-0', '!mb-0', '!border-0', '!rounded-none');
+        
+        // 2. Determine the language
+        // Astro's Shiki automatically injects the data-language attribute
+        const language = pre.getAttribute('data-language') || 'Code';
+        
+        // 3. Create the Header Bar
+        const header = document.createElement('div');
+        header.className = 'flex items-center justify-between px-4 py-2 bg-[var(--color-border)] text-xs font-mono text-[var(--color-text-secondary)] border-b border-[var(--color-border)]';
+        
+        // Language Indicator
+        const langSpan = document.createElement('span');
+        langSpan.textContent = language.toUpperCase();
+        langSpan.className = 'font-semibold tracking-wider';
+        
+        // Copy Button
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'flex items-center gap-1.5 hover:text-[var(--color-text-primary)] transition-colors focus:outline-none';
+        copyBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+          <span>Copy</span>
+        `;
+        
+        // Assemble the header
+        header.appendChild(langSpan);
+        header.appendChild(copyBtn);
+        
+        // Insert the header at the top of the wrapper
+        wrapper.insertBefore(header, pre);
+        
+        // 4. Implement Copy Functionality
+        copyBtn.addEventListener('click', async () => {
+          // Get the raw text from the <code> tag inside the <pre>
+          const codeText = pre.querySelector('code')?.innerText || (pre as HTMLElement).innerText;
+          
+          try {
+            await navigator.clipboard.writeText(codeText);
+            
+            // Visual success feedback
+            copyBtn.innerHTML = `
+              <svg class="w-4 h-4 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              <span class="text-[var(--color-accent)] font-medium">Copied!</span>
+            `;
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+              copyBtn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                <span>Copy</span>
+              `;
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy code snippet: ', err);
+            const span = copyBtn.querySelector('span');
+            if (span) span.textContent = 'Error';
+          }
+        });
+      });
+    }
+
+    // Run on standard initial page load
+    document.addEventListener('DOMContentLoaded', setupCodeBlocks);
+    
+    // Run on Astro View Transitions navigation (if enabled in the future)
+    document.addEventListener('astro:page-load', setupCodeBlocks);
+  </script>
 </BaseLayout>

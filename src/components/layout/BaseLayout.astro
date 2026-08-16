@@ -3,6 +3,7 @@
 import Header from '@/components/common/Header.astro';
 import Footer from '@/components/common/Footer.astro';
 import SEO from '@/components/seo/SEO.astro';
+import { ViewTransitions } from 'astro:transitions'; // <-- 1. Import ViewTransitions
 
 export interface Props {
   title?: string;
@@ -20,34 +21,30 @@ const { title, description, image, canonical, article = false } = Astro.props;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="icon" type="image/png" href="/favicon.png" />  
+  <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
-
   <SEO {title} {description} {image} {canonical} {article} />
+  
+  <ViewTransitions /> <!-- <-- 2. Add the component to the head -->
 
-  <!-- Preconnect to Google Fonts domains for faster TLS handshake -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  
-  <!-- Asynchronous stylesheet loading with media print switch to prevent render-blocking -->
-  <link 
-    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;600&display=swap" 
-    rel="stylesheet" 
-    media="print"
+  <link
+     href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;600&display=swap"
+     rel="stylesheet"
+     media="print"
     onload="this.media='all'"
   />
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   </noscript>
-  
   <style is:global>
     @import '/src/styles/global.css';
   </style>
-
-  <!-- THE FIX: Theme initialization script moved to the <head> and inlined -->
+  
+  <!-- Updated theme script to persist across View Transitions -->
   <script is:inline>
-    (function() {
+    function applyTheme() {
       const stored = localStorage.getItem('theme');
       const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       const theme = stored || system;
@@ -56,17 +53,16 @@ const { title, description, image, canonical, article = false } = Astro.props;
       } else {
         document.documentElement.classList.remove('dark');
       }
-    })();
+    }
+    applyTheme();
+    document.addEventListener('astro:after-swap', applyTheme);
   </script>
 </head>
 <body class="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
   <Header />
-  
   <main class="flex-1">
     <slot />
   </main>
-  
   <Footer />
-  <!-- Removed the external script tag from down here -->
 </body>
 </html>

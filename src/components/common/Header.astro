@@ -61,18 +61,21 @@ import Search from '@/components/Search.astro';
 </header>
 
 <script>
-  const btn = document.getElementById('mobile-menu-btn');
-  const nav = document.getElementById('mobile-nav');
+  // Wrap the logic in astro:page-load
+  document.addEventListener('astro:page-load', () => {
+    const btn = document.getElementById('mobile-menu-btn');
+    const nav = document.getElementById('mobile-nav');
 
-  // Toggle menu on click
-  btn?.addEventListener('click', () => {
-    nav?.classList.toggle('hidden');
-  });
+    // Toggle menu on click
+    btn?.addEventListener('click', () => {
+      nav?.classList.toggle('hidden');
+    });
 
-  // Automatically hide the mobile menu if the screen resizes to desktop width
-  window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) { // 768px is the 'md' breakpoint in Tailwind
-      nav?.classList.add('hidden');
-    }
+    // Automatically hide the mobile menu if the screen resizes to desktop width
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) { // 768px is the 'md' breakpoint in Tailwind
+        nav?.classList.add('hidden');
+      }
+    });
   });
 </script>

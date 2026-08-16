@@ -1,6 +1,5 @@
 ---
 // src/components/seo/Breadcrumbs.astro
-
 export interface Breadcrumb {
   label: string;
   url: string;
@@ -20,10 +19,10 @@ const schema = {
     "@type": "ListItem",
     "position": index + 1,
     "name": item.label,
-    // Astro.url.origin ensures the schema uses absolute URLs, which Google requires
-    "item": new URL(item.url, Astro.url.origin).href 
-  }))
-};
+    // Astro.site ensures the schema uses the explicit absolute URL defined in astro.config.mjs
+    "item": new URL(item.url, Astro.site).href 
+   }))
+}
 ---
 
 <nav aria-label="Breadcrumb" class="mb-6">

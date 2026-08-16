@@ -5,9 +5,10 @@ const { slug, data, body } = post;
 const wordCount = body ? body.split(/\s+/).filter(Boolean).length : 0;
 const displayReadingTime = data.readingTime || Math.max(1, Math.ceil(wordCount / 200)).toString();
 ---
-<a href={`/blog/${slug}`} class="group block h-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-5 hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-sm transition-all">
-  <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]"><span>{data.category}</span>{data.topics?.[0] && <><span class="text-[var(--color-border)]">/</span><span class="text-[var(--color-text-muted)]">{data.topics[0]}</span></>}</div>
+<a href={`/blog/${slug}`} class="group block h-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-sm transition-all">
+  {data.image && <img src={data.image} alt={data.title} width="1200" height="630" loading="lazy" decoding="async" class="aspect-[1.91/1] w-full object-cover border-b border-[var(--color-border)]" />}
+  <div class="p-5"><div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]"><span>{data.category}</span>{data.topics?.[0] && <><span class="text-[var(--color-border)]">/</span><span class="text-[var(--color-text-muted)]">{data.topics[0]}</span></>}</div>
   <h3 class="mt-3 text-xl font-bold leading-snug text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)]">{data.title}</h3>
   <p class="mt-2 text-sm leading-6 text-[var(--color-text-secondary)] line-clamp-3">{data.description}</p>
-  <div class="mt-5 flex items-center gap-2 text-xs text-[var(--color-text-muted)]"><time datetime={data.pubDate.toISOString()}>{data.pubDate.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}</time><span>•</span><span>{displayReadingTime} min read</span></div>
+  <div class="mt-5 flex items-center gap-2 text-xs text-[var(--color-text-muted)]"><time datetime={data.pubDate.toISOString()}>{data.pubDate.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}</time><span>•</span><span>{displayReadingTime} min read</span></div></div>
 </a>

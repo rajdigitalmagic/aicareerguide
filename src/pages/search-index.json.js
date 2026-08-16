@@ -4,7 +4,7 @@ export async function GET() {
   const [posts, projects, roadmaps, tools, resources] = await Promise.all([
     getCollection('blog', ({ data }) => !data.draft),
     getCollection('projects', ({ data }) => !data.draft),
-    getCollection('roadmaps'),
+    getCollection('roadmaps', ({ data }) => !data.draft),
     getCollection('tools', ({ data }) => !data.draft),
     getCollection('resources', ({ data }) => !data.draft),
   ]);

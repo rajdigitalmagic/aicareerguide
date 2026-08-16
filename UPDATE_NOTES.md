@@ -1,35 +1,35 @@
-# AI Career Guide — Latest Update
+# AI Career Guide — Production Audit & Fixes
 
-## Critical fix
-- Fixed theme persistence across Astro View Transitions. The selected light/dark theme now survives page navigation.
-- Theme initialization runs before route swaps and updates the new document's `html` class, `color-scheme`, and theme-color meta tag.
-- System preference changes are respected when the user has not explicitly selected a theme.
+## Audit scope
+Reviewed the uploaded Astro source against the AI Career Guide blueprint covering UX, mobile responsiveness, themes, accessibility, SEO, search, content architecture, performance, sharing, and publishing workflow.
 
-## UI / UX fixes
-- Theme toggle now uses delegated click handling, so it remains reliable after client-side navigation.
-- Navigation now marks the current section with `aria-current="page"`.
-- Blog/resource/tool filter buttons now expose `aria-pressed` state.
-- Blog page search now also indexes article topics.
-- Homepage roadmap selection now actually prioritizes roadmaps marked `featured`.
+## Fixed
+- Fixed duplicate SEO title suffixes such as `Blog | AI Career Guide | AI Career Guide`.
+- Removed duplicate BreadcrumbList JSON-LD emitted by both the layout and breadcrumb component.
+- Added a real `/search` page and aligned the site SearchAction with it.
+- Kept lightweight Fuse.js search and expanded it to blog posts, projects, roadmaps, tools, and resources.
+- Fixed search initialization so Astro View Transitions do not create duplicate listeners.
+- Fixed mobile header width pressure by using a dedicated mobile search button and keeping the full search field on larger screens.
+- Improved mobile menu accessibility with open/close icons and correct labels.
+- Fixed draft filtering for roadmaps and resources and updated the content schemas to support `draft`.
+- Added article previous/next navigation.
+- Added a lightweight article reading-progress indicator.
+- Improved TOC active-section handling and made initialization idempotent across View Transitions.
+- Improved code blocks with copy controls while preserving Shiki syntax highlighting.
+- Updated X sharing to the current `x.com` intent endpoint.
+- Added article-card images with explicit dimensions and lazy loading.
+- Removed external Google Fonts loading to reduce render-blocking network work; the site now uses the system font stack.
+- Improved article structured data author semantics by using an Organization representation for the site author.
+- Kept canonical URLs, sitemap, robots.txt, RSS, Open Graph, article schema, breadcrumbs, and static generation intact.
 
-## SEO improvements
-- Added BreadcrumbList JSON-LD for article, AI topic, career roadmap, and project pages.
-- Added `article:published_time` and `article:modified_time` Open Graph metadata.
-- Dynamic theme-color metadata now matches the active theme.
+## Verification
+- JavaScript syntax checks pass for the generated `.js` route files.
+- Full Astro production build could not be executed in this environment because dependency installation timed out; run `npm install` followed by `npm run build` in the project/Cloudflare environment before deployment.
 
-## Existing fixes retained
-- AI topic static routes use a locally scoped topic definition.
-- Resources route exists.
-- Career roadmap content exists for the major roadmap links.
-- Search index includes blog posts, projects, roadmaps, tools, and resources.
-- Placeholder links and fake repository URLs have been removed.
-
-## Recommended next work
-1. Run `npm run build` in Cloudflare after committing.
-2. Test light/dark mode while navigating between at least 10 routes.
-3. Test browser back/forward navigation.
-4. Test mobile menu + theme toggle together.
-5. Add pagination when the blog exceeds roughly 20–30 visible articles.
-6. Add a dedicated learning-path graph connecting articles → projects → career roadmaps.
-7. Add a real newsletter provider only after the content pipeline is established.
-8. Review npm audit vulnerabilities separately; do not use `npm audit fix --force` blindly.
+## Next high-value additions
+1. Publish more original articles before adding more directory features.
+2. Add pagination once the blog grows beyond roughly 20–30 visible articles.
+3. Add a learning graph linking articles → projects → roadmaps.
+4. Connect a real newsletter provider only after the content pipeline is established.
+5. Add analytics/Search Console and measure search queries, CTR, engagement, and newsletter conversion.
+6. Add an explicit editorial/review workflow for factual AI content.

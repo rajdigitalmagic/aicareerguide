@@ -34,56 +34,30 @@ const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
 <script>
   function initTOC() {
-    // 1. Intersection Observer for highlighting the active section
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const id = entry.target.getAttribute('id');
-          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`);
-          
-          if (tocLink) {
-            if (entry.isIntersecting) {
-              tocLink.setAttribute('data-active', 'true');
-            } else {
-              tocLink.setAttribute('data-active', 'false');
-            }
-          }
-        });
-      },
-      { rootMargin: '-10% 0px -80% 0px' } // Triggers near top third of screen
-    );
-
-    document.querySelectorAll('.prose h2[id], .prose h3[id]').forEach((section) => {
-      observer.observe(section);
-    });
-
-    // 2. Smooth Scrolling with offset for the sticky header
-    document.querySelectorAll('.toc-link').forEach(link => {
-      link.addEventListener('click', (e) => {
+    document.querySelectorAll<HTMLElement>('.toc-container').forEach((container) => {
+      if (container.dataset.ready === 'true') return;
+      container.dataset.ready = 'true';
+      const links = [...container.querySelectorAll<HTMLAnchorElement>('.toc-link')];
+      const headings = links.map(link => document.getElementById(link.getAttribute('href')?.slice(1) || '')).filter(Boolean) as HTMLElement[];
+      if (!headings.length) return;
+      const setActive = (id: string | null) => links.forEach(link => link.setAttribute('data-active', link.getAttribute('href') === `#${id}` ? 'true' : 'false'));
+      let visibleId: string | null = headings[0].id;
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) visibleId = (visible[0].target as HTMLElement).id;
+        setActive(visibleId);
+      }, { rootMargin: '-90px 0px -65% 0px', threshold: 0 });
+      headings.forEach(h => observer.observe(h));
+      setActive(visibleId);
+      links.forEach(link => link.addEventListener('click', (e) => {
+        const targetId = link.getAttribute('href')?.slice(1); if (!targetId) return;
+        const target = document.getElementById(targetId); if (!target) return;
         e.preventDefault();
-        
-        const targetId = link.getAttribute('href')?.substring(1);
-        if (!targetId) return;
-        
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-          // Calculate exact position, accounting for the ~64px sticky header + some padding
-          const headerOffset = 90; 
-          const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.scrollY - headerOffset;
-          
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-          
-          // Update URL silently
-          history.pushState(null, '', `#${targetId}`);
-        }
-      });
+        target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+        history.pushState(null, '', `#${targetId}`);
+        setActive(targetId);
+      }));
     });
   }
-
-  // Use astro:page-load to ensure this runs every time View Transitions swaps the page
   document.addEventListener('astro:page-load', initTOC);
 </script>

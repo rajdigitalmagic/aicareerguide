@@ -31,6 +31,7 @@ export const collections = {
       category: z.string(),
       difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
       estimatedTime: z.string(),
+      draft: z.boolean().default(false),
       image: z.string().optional(),
       skills: z.array(z.string()).default([]),
       featured: z.boolean().default(false),

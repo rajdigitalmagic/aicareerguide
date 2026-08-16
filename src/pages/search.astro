@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+---
+<BaseLayout title="Search" description="Search AI Career Guide articles, projects, roadmaps, tools, and resources.">
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Find something useful</p>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">Search</h1>
+    <div class="mt-7"><label for="site-search" class="sr-only">Search AI Career Guide</label><input id="site-search" type="search" autofocus placeholder="Search articles, projects, roadmaps, tools..." class="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" /></div>
+    <p id="search-count" class="mt-4 text-sm text-[var(--color-text-muted)]"></p>
+    <div id="search-page-results" class="mt-6 grid gap-4"></div>
+  </section>
+  <script>
+    import Fuse from 'fuse.js';
+    let fuse: Fuse<any> | null = null;
+    const init=async()=>{const input=document.getElementById('site-search') as HTMLInputElement|null;const results=document.getElementById('search-page-results');const count=document.getElementById('search-count');if(!input||!results||input.dataset.ready==='true')return;input.dataset.ready='true';try{const response=await fetch('/search-index.json');const data=await response.json();fuse=new Fuse(data,{keys:[{name:'title',weight:2},{name:'description',weight:1},{name:'category',weight:1.5},{name:'tags',weight:1.5}],threshold:.32,ignoreLocation:true});}catch{if(count)count.textContent='Search is temporarily unavailable.';return;}const render=()=>{const q=input.value.trim();if(!q){results.innerHTML='<p class="text-[var(--color-text-muted)]">Start typing to search the site.</p>';if(count)count.textContent='';return;}const matches=fuse!.search(q);if(count)count.textContent=`${matches.length} result${matches.length===1?'':'s'}`;results.innerHTML=matches.slice(0,30).map(({item})=>`<a href="${item.url}" class="rounded-xl border border-[var(--color-border)] p-5 hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-secondary)]"><div class="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">${item.category}</div><h2 class="mt-2 font-bold text-[var(--color-text-primary)]">${item.title}</h2><p class="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">${item.description}</p></a>`).join('')||'<p class="text-[var(--color-text-muted)]">No results found.</p>';};input.addEventListener('input',render);render();const params=new URLSearchParams(location.search);if(params.get('q')){input.value=params.get('q')!;render();}};document.addEventListener('astro:page-load',init);
+  </script>
+</BaseLayout>

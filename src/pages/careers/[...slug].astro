@@ -3,7 +3,7 @@ import BaseLayout from '@/components/layout/BaseLayout.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import { getCollection } from 'astro:content';
 export async function getStaticPaths() {
-  const roadmaps = await getCollection('roadmaps');
+  const roadmaps = await getCollection('roadmaps', ({ data }) => !data.draft);
   return roadmaps.map(roadmap => ({ params: { slug: roadmap.slug }, props: { roadmap } }));
 }
 const { roadmap } = Astro.props;

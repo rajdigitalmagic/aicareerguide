@@ -1,7 +1,5 @@
 ---
 export interface Breadcrumb { label:string; url:string }
 const { items } = Astro.props as { items: Breadcrumb[] };
-const schema={ '@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':items.map((item,index)=>({'@type':'ListItem',position:index+1,name:item.label,item:new URL(item.url,Astro.site).href})) };
 ---
 <nav aria-label="Breadcrumb" class="mb-6"><ol class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-muted)]">{items.map((item,index)=><li class="flex items-center gap-2">{index>0&&<span aria-hidden="true">/</span>}{index===items.length-1?<span aria-current="page" class="font-medium text-[var(--color-text-primary)]">{item.label}</span>:<a href={item.url} class="hover:text-[var(--color-accent)] hover:underline">{item.label}</a>}</li>)}</ol></nav>
-<script type="application/ld+json" set:html={JSON.stringify(schema)}/>

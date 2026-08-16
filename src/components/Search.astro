@@ -1,18 +1,16 @@
 ---
-// src/components/Search.astro
 import { Search as SearchIcon, Loader2 } from 'lucide-astro';
 ---
 
 <div class="relative" id="search-container">
-  <!-- Search Input Area -->
   <div class="relative flex items-center">
     <SearchIcon class="absolute left-3 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" />
     <input
-      type="text"
+      type="search"
       id="search-input"
       placeholder="Search... (Ctrl+K)"
-      class="w-48 sm:w-64 pl-9 pr-8 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-all text-sm"
-      aria-label="Search"
+      class="w-64 pl-9 pr-8 py-2 min-h-11 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] text-sm"
+      aria-label="Search site"
       autocomplete="off"
       aria-expanded="false"
       aria-controls="search-results"
@@ -20,14 +18,7 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
     <Loader2 id="search-loading" class="absolute right-3 w-4 h-4 text-[var(--color-text-muted)] animate-spin hidden" />
   </div>
 
-  <!-- Search Results Dropdown -->
-  <div
-    id="search-results"
-    class="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-h-[60vh] overflow-y-auto bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl shadow-xl hidden z-50"
-    role="listbox"
-  >
-    <!-- Results are dynamically injected here -->
-  </div>
+  <div id="search-results" class="absolute right-0 mt-2 w-[min(24rem,calc(100vw-2rem))] max-h-[60vh] overflow-y-auto bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl shadow-xl hidden z-50" role="listbox"></div>
 </div>
 
 <script>
@@ -37,38 +28,28 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
   let isLoading = false;
   let activeIndex = -1;
 
-  function escapeHtml(unsafe: string): string {
-    if (!unsafe) return '';
-    return unsafe
-      .toString()
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
+  const escapeHtml = (unsafe: string) => (unsafe || '').toString()
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
   async function loadIndex(loadingEl: Element | null) {
     if (fuse || isLoading) return;
-
     isLoading = true;
     loadingEl?.classList.remove('hidden');
-
     try {
       const res = await fetch('/search-index.json');
       if (!res.ok) throw new Error(`Search index request failed: ${res.status}`);
       const data = await res.json();
-
       fuse = new Fuse(data, {
         keys: [
           { name: 'title', weight: 2 },
           { name: 'description', weight: 1 },
           { name: 'category', weight: 1.5 },
-          { name: 'tags', weight: 1.5 }
+          { name: 'tags', weight: 1.5 },
         ],
         threshold: 0.3,
         includeScore: true,
-        ignoreLocation: true
+        ignoreLocation: true,
       });
     } catch (error) {
       console.error('Failed to load search index:', error);
@@ -78,119 +59,60 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
     }
   }
 
-  function render(
-    results: any[],
-    input: HTMLInputElement,
-    resultsEl: HTMLElement
-  ) {
-    activeIndex = -1;
-
-    if (!results.length) {
-      resultsEl.innerHTML =
-        '<div class="p-4 text-sm text-center text-[var(--color-text-muted)]">No results found.</div>';
-      resultsEl.classList.remove('hidden');
-      input.setAttribute('aria-expanded', 'true');
-      return;
-    }
-
-    let html = '<ul class="divide-y divide-[var(--color-border)]">';
-
-    results.slice(0, 6).forEach(({ item }) => {
-      const safeTitle = escapeHtml(item.title);
-      const safeCategory = escapeHtml(item.category);
-      const safeUrl = escapeHtml(item.url);
-      const safeTags =
-        item.tags && item.tags.length > 0
-          ? `<span class="opacity-50">•</span> <span>${escapeHtml(item.tags.slice(0, 2).join(', '))}</span>`
-          : '';
-
-      html += `
-        <li role="presentation">
-          <a href="${safeUrl}" role="option" class="block p-4 hover:bg-[var(--color-bg-secondary)] focus:bg-[var(--color-bg-secondary)] focus:outline-none transition-colors">
-            <div class="text-sm font-bold text-[var(--color-text-primary)] truncate">${safeTitle}</div>
-            <div class="text-xs text-[var(--color-text-muted)] mt-1 flex items-center gap-1.5 truncate">
-              <span class="text-[var(--color-accent)] font-semibold uppercase tracking-wider">${safeCategory}</span>
-              ${safeTags}
-            </div>
-          </a>
-        </li>
-      `;
-    });
-
-    html += '</ul>';
-    resultsEl.innerHTML = html;
-    resultsEl.classList.remove('hidden');
-    input.setAttribute('aria-expanded', 'true');
-  }
-
   function initSearch() {
     const input = document.getElementById('search-input') as HTMLInputElement | null;
-    const container = document.getElementById('search-container');
+    const container = document.getElementById('search-container') as HTMLElement | null;
     const resultsEl = document.getElementById('search-results') as HTMLElement | null;
     const loadingEl = document.getElementById('search-loading');
+    if (!input || !container || !resultsEl || container.dataset.ready === 'true') return;
+    container.dataset.ready = 'true';
 
-    if (!input || !container || !resultsEl) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        input.focus();
-        return;
+    const render = (results: any[]) => {
+      activeIndex = -1;
+      if (!results.length) {
+        resultsEl.innerHTML = '<div class="p-4 text-sm text-center text-[var(--color-text-muted)]">No results found.</div>';
+      } else {
+        resultsEl.innerHTML = `<ul class="divide-y divide-[var(--color-border)]">${results.slice(0, 6).map(({ item }) => {
+          const safeTitle = escapeHtml(item.title);
+          const safeCategory = escapeHtml(item.category);
+          const safeUrl = escapeHtml(item.url);
+          const safeTags = item.tags?.length ? `<span class="opacity-50">•</span> <span>${escapeHtml(item.tags.slice(0, 2).join(', '))}</span>` : '';
+          return `<li role="presentation"><a href="${safeUrl}" role="option" class="block p-4 hover:bg-[var(--color-bg-secondary)] focus:bg-[var(--color-bg-secondary)] focus:outline-none"><div class="text-sm font-bold text-[var(--color-text-primary)] truncate">${safeTitle}</div><div class="text-xs text-[var(--color-text-muted)] mt-1 flex items-center gap-1.5 truncate"><span class="text-[var(--color-accent)] font-semibold uppercase tracking-wider">${safeCategory}</span>${safeTags}</div></a></li>`;
+        }).join('')}</ul>`;
       }
-
-      if (e.key === 'Escape') {
-        resultsEl.classList.add('hidden');
-        input.setAttribute('aria-expanded', 'false');
-        input.blur();
-        return;
-      }
-
-      const isDropdownVisible = !resultsEl.classList.contains('hidden');
-      if (!isDropdownVisible) return;
-
-      const items = resultsEl.querySelectorAll<HTMLAnchorElement>('a');
-      if (!items.length) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        activeIndex = (activeIndex + 1) % items.length;
-        items[activeIndex].focus();
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        activeIndex = (activeIndex - 1 + items.length) % items.length;
-        items[activeIndex].focus();
-      }
+      resultsEl.classList.remove('hidden');
+      input.setAttribute('aria-expanded', 'true');
     };
 
     const onInput = async () => {
       await loadIndex(loadingEl);
       const query = input.value.trim();
-
       if (!query) {
         resultsEl.classList.add('hidden');
         input.setAttribute('aria-expanded', 'false');
         return;
       }
-
-      if (fuse) render(fuse.search(query), input, resultsEl);
+      if (fuse) render(fuse.search(query));
     };
 
     input.addEventListener('focus', () => loadIndex(loadingEl));
     input.addEventListener('input', onInput);
-    container.addEventListener('keydown', onKeyDown);
-
+    container.addEventListener('keydown', (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); return; }
+      if (e.key === 'Escape') { resultsEl.classList.add('hidden'); input.setAttribute('aria-expanded', 'false'); input.blur(); return; }
+      if (resultsEl.classList.contains('hidden')) return;
+      const items = resultsEl.querySelectorAll<HTMLAnchorElement>('a');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = (activeIndex + 1) % items.length; items[activeIndex].focus(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = (activeIndex - 1 + items.length) % items.length; items[activeIndex].focus(); }
+    });
+    document.addEventListener('click', (event) => {
+      if (!container.contains(event.target as Node)) {
+        resultsEl.classList.add('hidden');
+        input.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
-
-  document.addEventListener('click', (event) => {
-    const container = document.getElementById('search-container');
-    const resultsEl = document.getElementById('search-results') as HTMLElement | null;
-    const input = document.getElementById('search-input') as HTMLInputElement | null;
-
-    if (container && !container.contains(event.target as Node)) {
-      resultsEl?.classList.add('hidden');
-      input?.setAttribute('aria-expanded', 'false');
-    }
-  });
 
   document.addEventListener('astro:page-load', initSearch);
 </script>

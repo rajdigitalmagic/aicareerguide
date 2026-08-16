@@ -33,6 +33,10 @@ const calculatedReadingTime = Math.ceil(wordCount / 200).toString();
   tags={post.data.tags || []}
   image={post.data.image}
   readingTime={post.data.readingTime || calculatedReadingTime}
+  updatedDate={post.data.updatedDate}
+  lastReviewed={post.data.lastReviewed}
+  sources={post.data.sources || []}
+  canonical={post.data.canonical}
   headings={headings}
   relatedPosts={related}
 >

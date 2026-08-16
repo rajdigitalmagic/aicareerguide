@@ -26,10 +26,20 @@ const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 
 // Filter the posts to only show ones relevant to this specific topic.
 // This looks for a tag matching the topic slug (e.g., "ml", "llms") or falls back to showing all "AI" category posts if no tags match yet.
-const filteredPosts = allPosts.filter(post => {
-  const hasMatchingTag = post.data.tags?.some(tag => tag.toLowerCase() === topic.slug);
-  return hasMatchingTag || post.data.category === 'AI'; 
-});
+const topicAliases: Record<string, string[]> = {
+  ml: ['ml', 'machine learning'],
+  llms: ['llm', 'llms', 'large language model', 'large language models'],
+  'gen-ai': ['gen-ai', 'generative ai', 'generative artificial intelligence'],
+  'ai-engineering': ['ai-engineering', 'ai engineering'],
+};
+
+const aliases = topicAliases[topic.slug] ?? [topic.slug];
+const filteredPosts = allPosts.filter(post =>
+  (post.data.tags ?? []).some(tag => {
+    const normalized = tag.toLowerCase().trim();
+    return aliases.includes(normalized) || aliases.includes(normalized.replace(/\s+/g, '-'));
+  })
+);
 
 const breadcrumbItems = [
   { label: 'Home', url: '/' },

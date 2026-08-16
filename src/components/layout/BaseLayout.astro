@@ -11,9 +11,11 @@ export interface Props {
   image?: any;
   canonical?: string;
   article?: boolean;
+  pubDate?: Date;
+  author?: string;
 }
 
-const { title, description, image, canonical, article = false } = Astro.props;
+const { title, description, image, canonical, article = false, pubDate, author } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -45,7 +47,7 @@ const { title, description, image, canonical, article = false } = Astro.props;
 
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
-  <SEO {title} {description} {image} {canonical} {article} />
+  <SEO {title} {description} {image} {canonical} {article} {pubDate} {author} />
   
   <ViewTransitions />
 

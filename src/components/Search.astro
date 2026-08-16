@@ -35,45 +35,30 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
 
   let fuse: Fuse<any> | null = null;
   let isLoading = false;
-  let activeIndex = -1; // Tracks keyboard navigation focus
+  let activeIndex = -1;
 
-  const input = document.getElementById('search-input') as HTMLInputElement;
-  const container = document.getElementById('search-container');
-  const resultsEl = document.getElementById('search-results');
-  const loadingEl = document.getElementById('search-loading');
-
-  // Utility to prevent XSS by escaping HTML characters
   function escapeHtml(unsafe: string): string {
     if (!unsafe) return '';
     return unsafe
       .toString()
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  // Keyboard shortcut support (Ctrl+K or Cmd+K)
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      input?.focus();
-    }
-  });
-
-  // Lazy-load the search index only when the user interacts with the search bar
-  async function loadIndex() {
+  async function loadIndex(loadingEl: Element | null) {
     if (fuse || isLoading) return;
-    
+
     isLoading = true;
     loadingEl?.classList.remove('hidden');
-    
+
     try {
       const res = await fetch('/search-index.json');
-      if (!res.ok) throw new Error('Network response was not ok');
+      if (!res.ok) throw new Error(`Search index request failed: ${res.status}`);
       const data = await res.json();
-      
+
       fuse = new Fuse(data, {
         keys: [
           { name: 'title', weight: 2 },
@@ -93,31 +78,31 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
     }
   }
 
-  // Render the search results into the dropdown
-  function render(results: any[]) {
-    if (!resultsEl) return;
-    
-    // Reset keyboard navigation state on new search
+  function render(
+    results: any[],
+    input: HTMLInputElement,
+    resultsEl: HTMLElement
+  ) {
     activeIndex = -1;
-    
+
     if (!results.length) {
-      resultsEl.innerHTML = '<div class="p-4 text-sm text-center text-[var(--color-text-muted)]">No results found.</div>';
+      resultsEl.innerHTML =
+        '<div class="p-4 text-sm text-center text-[var(--color-text-muted)]">No results found.</div>';
       resultsEl.classList.remove('hidden');
-      input?.setAttribute('aria-expanded', 'true');
+      input.setAttribute('aria-expanded', 'true');
       return;
     }
 
     let html = '<ul class="divide-y divide-[var(--color-border)]">';
-    
+
     results.slice(0, 6).forEach(({ item }) => {
-      // Safely escape all dynamic content before injecting
       const safeTitle = escapeHtml(item.title);
       const safeCategory = escapeHtml(item.category);
       const safeUrl = escapeHtml(item.url);
-      
-      const safeTags = item.tags && item.tags.length > 0
-         ? `<span class="opacity-50">•</span> <span>${escapeHtml(item.tags.slice(0, 2).join(', '))}</span>`
-         : '';
+      const safeTags =
+        item.tags && item.tags.length > 0
+          ? `<span class="opacity-50">•</span> <span>${escapeHtml(item.tags.slice(0, 2).join(', '))}</span>`
+          : '';
 
       html += `
         <li role="presentation">
@@ -131,66 +116,81 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
         </li>
       `;
     });
-    
+
     html += '</ul>';
     resultsEl.innerHTML = html;
     resultsEl.classList.remove('hidden');
-    input?.setAttribute('aria-expanded', 'true');
+    input.setAttribute('aria-expanded', 'true');
   }
 
-  // Handle Keyboard Navigation (Up/Down Arrows) within the Search Container
-  container?.addEventListener('keydown', (e) => {
-    const isDropdownVisible = !resultsEl?.classList.contains('hidden');
-    if (!isDropdownVisible) return;
+  function initSearch() {
+    const input = document.getElementById('search-input') as HTMLInputElement | null;
+    const container = document.getElementById('search-container');
+    const resultsEl = document.getElementById('search-results') as HTMLElement | null;
+    const loadingEl = document.getElementById('search-loading');
 
-    const items = resultsEl?.querySelectorAll('a');
-    if (!items || items.length === 0) return;
+    if (!input || !container || !resultsEl) return;
 
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      activeIndex = (activeIndex + 1) % items.length;
-      items[activeIndex].focus();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      activeIndex = (activeIndex - 1 + items.length) % items.length;
-      items[activeIndex].focus();
-    }
-  });
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        input.focus();
+        return;
+      }
 
-  // Event Listeners
-  input?.addEventListener('focus', loadIndex);
-  
-  input?.addEventListener('input', async (e) => {
-    await loadIndex();
-    const target = e.target as HTMLInputElement;
-    const query = target.value.trim();
-    
-    if (!query) {
+      if (e.key === 'Escape') {
+        resultsEl.classList.add('hidden');
+        input.setAttribute('aria-expanded', 'false');
+        input.blur();
+        return;
+      }
+
+      const isDropdownVisible = !resultsEl.classList.contains('hidden');
+      if (!isDropdownVisible) return;
+
+      const items = resultsEl.querySelectorAll<HTMLAnchorElement>('a');
+      if (!items.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = (activeIndex + 1) % items.length;
+        items[activeIndex].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = (activeIndex - 1 + items.length) % items.length;
+        items[activeIndex].focus();
+      }
+    };
+
+    const onInput = async () => {
+      await loadIndex(loadingEl);
+      const query = input.value.trim();
+
+      if (!query) {
+        resultsEl.classList.add('hidden');
+        input.setAttribute('aria-expanded', 'false');
+        return;
+      }
+
+      if (fuse) render(fuse.search(query), input, resultsEl);
+    };
+
+    input.addEventListener('focus', () => loadIndex(loadingEl));
+    input.addEventListener('input', onInput);
+    container.addEventListener('keydown', onKeyDown);
+
+  }
+
+  document.addEventListener('click', (event) => {
+    const container = document.getElementById('search-container');
+    const resultsEl = document.getElementById('search-results') as HTMLElement | null;
+    const input = document.getElementById('search-input') as HTMLInputElement | null;
+
+    if (container && !container.contains(event.target as Node)) {
       resultsEl?.classList.add('hidden');
       input?.setAttribute('aria-expanded', 'false');
-      return;
-    }
-    
-    if (fuse) {
-      const results = fuse.search(query);
-      render(results);
     }
   });
 
-  // Close the search dropdown if the user clicks anywhere outside of it
-  document.addEventListener('click', (e) => {
-    if (container && !container.contains(e.target as Node)) {
-      resultsEl?.classList.add('hidden');
-      input?.setAttribute('aria-expanded', 'false');
-    }
-  });
-
-  // Close the search dropdown on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      resultsEl?.classList.add('hidden');
-      input?.setAttribute('aria-expanded', 'false');
-      input?.blur();
-    }
-  });
+  document.addEventListener('astro:page-load', initSearch);
 </script>

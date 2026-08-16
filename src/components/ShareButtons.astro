@@ -19,8 +19,18 @@ const encoded = encodeURIComponent;
 </div>
 
 <script>
-  document.getElementById('copy-link')?.addEventListener('click', () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert('Link copied!');
+  document.addEventListener('click', async (event) => {
+    const target = event.target as HTMLElement;
+    const button = target.closest('#copy-link');
+    if (!button) return;
+
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      const originalLabel = button.getAttribute('aria-label') || 'Copy link';
+      button.setAttribute('aria-label', 'Link copied');
+      setTimeout(() => button.setAttribute('aria-label', originalLabel), 1500);
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+    }
   });
 </script>

@@ -4,7 +4,7 @@ import { defineCollection, z } from 'astro:content';
 export const collections = {
   blog: defineCollection({
     type: 'content',
-    schema: ({ image }) => z.object({
+    schema: z.object({
       title: z.string(),
       description: z.string(),
       pubDate: z.date(),
@@ -13,7 +13,7 @@ export const collections = {
       category: z.string(),
       topics: z.array(z.string()).optional(),
       tags: z.array(z.string()).optional(),
-      image: image().optional(),
+      image: z.string().optional(),
       readingTime: z.string().optional(),
       featured: z.boolean().optional().default(false),
       draft: z.boolean().optional().default(false),
@@ -24,13 +24,13 @@ export const collections = {
   }),
   roadmaps: defineCollection({
     type: 'content',
-    schema: ({ image }) => z.object({
+    schema: z.object({
       title: z.string(),
       description: z.string(),
       category: z.string(),
       difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
       estimatedTime: z.string(),
-      image: image().optional(),
+      image: z.string().optional(),
     }),
   }),
   projects: defineCollection({

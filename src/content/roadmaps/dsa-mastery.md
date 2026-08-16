@@ -4,7 +4,6 @@ description: "A comprehensive beginner-to-expert syllabus and daily practice pla
 category: "Algorithms"
 difficulty: "Advanced"
 estimatedTime: "6-12 Months"
-image: "/images/roadmaps/dsa-cpp.jpg"
 ---
 
 ## 01 Foundation: C++ Semantics & STL

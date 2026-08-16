@@ -1,7 +1,5 @@
 ---
 // src/components/AuthorBox.astro
-import { Twitter, Linkedin, Github } from 'lucide-astro';
-
 export interface Props {
   author: string;
   bio?: string;
@@ -28,17 +26,5 @@ const {
       {bio}
     </p>
     
-    <!-- Social Links -->
-    <div class="mt-4 flex items-center gap-4">
-      <a href="#" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors" aria-label="Twitter">
-        <Twitter class="w-4 h-4" />
-      </a>
-      <a href="#" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors" aria-label="LinkedIn">
-        <Linkedin class="w-4 h-4" />
-      </a>
-      <a href="#" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors" aria-label="GitHub">
-        <Github class="w-4 h-4" />
-      </a>
-    </div>
   </div>
 </div>

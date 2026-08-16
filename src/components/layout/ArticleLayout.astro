@@ -7,7 +7,6 @@ import AuthorBox from '@/components/AuthorBox.astro';
 import ShareButtons from '@/components/ShareButtons.astro';
 import Newsletter from '@/components/common/Newsletter.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
-import { Image } from 'astro:assets'; 
 
 export interface Props {
   title: string;
@@ -23,6 +22,7 @@ export interface Props {
   readingTime?: string;
   headings: { depth: number; slug: string; text: string }[];
   relatedPosts?: any[];
+  canonical?: string;
 }
 
 const {
@@ -38,7 +38,8 @@ const {
   image,
   readingTime,
   headings = [],
-  relatedPosts = []
+  relatedPosts = [],
+  canonical
 } = Astro.props;
 
 const breadcrumbItems = [
@@ -53,8 +54,10 @@ const breadcrumbItems = [
   title={title}
   description={description}
   image={image}
-  canonical={Astro.url.pathname}
+  canonical={canonical || Astro.url.pathname}
   article={true}
+  pubDate={pubDate}
+  author={author}
 >
   <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
     <!-- Breadcrumb Trail -->
@@ -112,11 +115,11 @@ const breadcrumbItems = [
     <!-- Optimized Hero Image -->
     {image && (
       <figure class="mt-8 mb-10 overflow-hidden rounded-2xl border border-[var(--color-border)] shadow-sm bg-[var(--color-bg-secondary)]">
-        <Image
+        <img
           src={image}
           alt={title || 'Article hero image'}
-          width={1200}
-          height={630}
+          width="1200"
+          height="630"
           class="w-full h-auto object-cover max-h-[500px]"
           loading="eager"
           decoding="async"

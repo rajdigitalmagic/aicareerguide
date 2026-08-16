@@ -1,7 +1,7 @@
 // src/content/config.ts
 import { defineCollection, z } from 'astro:content';
 
-const blogSchema = z.object({
+const blogSchema = ({ image }) => z.object({
   title: z.string(),
   description: z.string(),
   pubDate: z.date(),
@@ -9,18 +9,18 @@ const blogSchema = z.object({
   author: z.string().default('AI Career Guide'),
   category: z.enum(['AI', 'Career', 'Projects', 'Technology']),
   tags: z.array(z.string()).optional(),
-  image: z.string().optional(),
+  image: image().optional(), // <-- Updated to Astro's image object helper
   draft: z.boolean().optional(),
   readingTime: z.string().optional(),
 });
 
-const roadmapSchema = z.object({
+const roadmapSchema = ({ image }) => z.object({
   title: z.string(),
   description: z.string(),
   category: z.string(),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
   estimatedTime: z.string(),
-  image: z.string().optional(),
+  image: image().optional(), // <-- Updated
 });
 
 const projectSchema = z.object({

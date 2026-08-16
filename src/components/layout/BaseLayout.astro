@@ -3,7 +3,7 @@
 import Header from '@/components/common/Header.astro';
 import Footer from '@/components/common/Footer.astro';
 import SEO from '@/components/seo/SEO.astro';
-import { ViewTransitions } from 'astro:transitions'; // <-- 1. Import ViewTransitions
+import { ViewTransitions } from 'astro:transitions';
 
 export interface Props {
   title?: string;
@@ -21,11 +21,33 @@ const { title, description, image, canonical, article = false } = Astro.props;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Theme script placed first to prevent flash, with OS sync added -->
+  <script is:inline>
+    function applyTheme() {
+      const stored = localStorage.getItem('theme');
+      const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const theme = stored || system;
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    applyTheme();
+    document.addEventListener('astro:after-swap', applyTheme);
+    
+    // Sync with OS changes dynamically if the user hasn't forced a preference
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (!localStorage.getItem('theme')) applyTheme();
+    });
+  </script>
+
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
   <SEO {title} {description} {image} {canonical} {article} />
   
-  <ViewTransitions /> <!-- <-- 2. Add the component to the head -->
+  <ViewTransitions />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -41,28 +63,22 @@ const { title, description, image, canonical, article = false } = Astro.props;
   <style is:global>
     @import '/src/styles/global.css';
   </style>
-  
-  <!-- Updated theme script to persist across View Transitions -->
-  <script is:inline>
-    function applyTheme() {
-      const stored = localStorage.getItem('theme');
-      const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      const theme = stored || system;
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-    applyTheme();
-    document.addEventListener('astro:after-swap', applyTheme);
-  </script>
 </head>
+
 <body class="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-200">
+  
+  <!-- Skip to Content Link (WCAG Requirement) -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] px-4 py-2 bg-[var(--color-accent)] text-white rounded-md font-bold shadow-lg">
+    Skip to content
+  </a>
+
   <Header />
-  <main class="flex-1">
+  
+  <!-- Added ID for the skip link -->
+  <main id="main-content" class="flex-1">
     <slot />
   </main>
+  
   <Footer />
 
   <!-- Global Code Block UI & Copy Button Script -->
@@ -127,6 +143,5 @@ const { title, description, image, canonical, article = false } = Astro.props;
     document.addEventListener('DOMContentLoaded', setupCodeBlocks);
     document.addEventListener('astro:page-load', setupCodeBlocks);
   </script>
-</body>
 </body>
 </html>

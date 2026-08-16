@@ -4,7 +4,7 @@ description: "A practical roadmap to becoming an AI engineer, covering software 
 category: "Engineering"
 difficulty: "Advanced"
 estimatedTime: "6–12 Months"
-image: "/images/roadmaps/ai-engineer.png"
+image: "/images/roadmaps/ai-engineer.webp"
 skills:
   - "Python"
   - "C++"

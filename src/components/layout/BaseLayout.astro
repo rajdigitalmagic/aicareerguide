@@ -80,7 +80,6 @@ const { title, description, image, canonical, article = false } = Astro.props;
   </main>
   
   <Footer />
-
   <!-- Global Code Block UI & Copy Button Script -->
   <script>
     function setupCodeBlocks() {
@@ -118,7 +117,8 @@ const { title, description, image, canonical, article = false } = Astro.props;
         wrapper.insertBefore(header, pre);
         
         copyBtn.addEventListener('click', async () => {
-          const codeText = pre.querySelector('code')?.innerText || (pre as HTMLElement).innerText;
+          // FIX: Use textContent instead of innerText to perfectly preserve line breaks
+          const codeText = pre.querySelector('code')?.textContent || (pre as HTMLElement).textContent || '';
           try {
             await navigator.clipboard.writeText(codeText);
             copyBtn.innerHTML = `
@@ -140,7 +140,7 @@ const { title, description, image, canonical, article = false } = Astro.props;
       });
     }
 
-    document.addEventListener('DOMContentLoaded', setupCodeBlocks);
+    // FIX: Only use astro:page-load to prevent running twice on initial visit
     document.addEventListener('astro:page-load', setupCodeBlocks);
   </script>
 </body>

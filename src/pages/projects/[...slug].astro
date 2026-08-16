@@ -46,18 +46,6 @@ const { Content } = await project.render();
         ))}
       </div>
 
-      <div class="mt-8 flex gap-4">
-        {project.data.githubUrl && (
-          <a href={project.data.githubUrl} target="_blank" rel="noopener noreferrer" class="px-6 py-2 bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] border border-[var(--color-border)] rounded-lg font-semibold hover:bg-[var(--color-border)] transition-colors">
-            View Source Code
-          </a>
-        )}
-        {project.data.demoUrl && (
-          <a href={project.data.demoUrl} target="_blank" rel="noopener noreferrer" class="px-6 py-2 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">
-            Live Demo
-          </a>
-        )}
-      </div>
     </header>
 
     <div class="prose prose-lg max-w-none text-[var(--color-text-secondary)]

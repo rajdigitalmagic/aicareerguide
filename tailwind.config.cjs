@@ -1,37 +1,21 @@
+// tailwind.config.cjs
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-  darkMode: 'class', // Enables toggle via the <html class="dark"> script in BaseLayout
+  darkMode: 'class',
   theme: {
     extend: {
-      // Map Tailwind's color palette directly to your global.css variables
       colors: {
-        bg: {
-          DEFAULT: 'var(--color-bg)',
-          secondary: 'var(--color-bg-secondary)',
-        },
-        text: {
-          primary: 'var(--color-text-primary)', // This fixes the missing reference error
-          secondary: 'var(--color-text-secondary)',
-          muted: 'var(--color-text-muted)',
-        },
-        border: {
-          DEFAULT: 'var(--color-border)',
-        },
-        accent: {
-          DEFAULT: 'var(--color-accent)',
-          hover: 'var(--color-accent-hover)',
-        },
+        bg: { DEFAULT: 'var(--color-bg)', secondary: 'var(--color-bg-secondary)' },
+        text: { primary: 'var(--color-text-primary)', secondary: 'var(--color-text-secondary)', muted: 'var(--color-text-muted)' },
+        border: { DEFAULT: 'var(--color-border)' },
+        accent: { DEFAULT: 'var(--color-accent)', hover: 'var(--color-accent-hover)' },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
-      maxWidth: {
-        'article': '780px',
-      },
-      // Streamlined Typography plugin: It now uses the CSS variables, 
-      // so it automatically adapts to Dark Mode without extra config.
+      maxWidth: { 'article': '780px' },
       typography: (theme) => ({
         DEFAULT: {
           css: {
@@ -39,20 +23,23 @@ module.exports = {
             a: {
               color: theme('colors.accent.DEFAULT'),
               textDecoration: 'none',
-              '&:hover': {
-                color: theme('colors.accent.hover'),
-                textDecoration: 'underline',
-              },
+              '&:hover': { color: theme('colors.accent.hover'), textDecoration: 'underline' },
             },
             strong: { color: theme('colors.text.primary') },
             h1: { color: theme('colors.text.primary') },
             h2: { color: theme('colors.text.primary') },
             h3: { color: theme('colors.text.primary') },
             h4: { color: theme('colors.text.primary') },
-            code: { 
-              color: theme('colors.text.primary'),
-              backgroundColor: theme('colors.bg.secondary'),
+            
+            /* FIX: Target ONLY inline code so Shiki syntax highlighting isn't destroyed */
+            ':not(pre) > code': {
+               color: theme('colors.accent.DEFAULT'),
+               backgroundColor: theme('colors.bg.secondary'),
+               padding: '0.2rem 0.4rem',
+               borderRadius: '0.25rem',
+               fontWeight: '600',
             },
+            
             blockquote: { 
               borderLeftColor: theme('colors.accent.DEFAULT'),
               color: theme('colors.text.muted'),
@@ -63,4 +50,4 @@ module.exports = {
     },
   },
   plugins: [require('@tailwindcss/typography')],
-};
+}

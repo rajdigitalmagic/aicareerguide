@@ -8,11 +8,20 @@ import Search from '@/components/Search.astro';
     <div class="flex items-center justify-between h-16">
       
       <!-- Logo -->
-      <div class="flex items-center space-x-2">
-        <a href="/" class="text-xl font-bold text-[var(--color-text-primary)] hover:text-[var(--color-accent)] transition-colors">
-          <span class="sr-only">AI Career Guide</span>
-          <span class="hidden sm:inline">AI Career Guide</span>
-          <span class="sm:hidden">AI</span>
+      <div class="flex items-center">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <!-- Logo Image: Change 'logo.svg' to your actual file name -->
+          <img 
+            src="/image/logo.svg" 
+            alt="AI Career Guide Logo" 
+            class="h-8 w-auto transition-transform duration-200 group-hover:scale-105"
+            width="32"
+            height="32"
+          />
+          <!-- Site Title: Hidden on very small mobile screens to save space -->
+          <span class="text-xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors hidden sm:inline">
+            AI Career Guide
+          </span>
         </a>
       </div>
 

@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 export async function GET() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
   const projects = await getCollection('projects', ({ data }) => !data.draft);
+  const roadmaps = await getCollection('roadmaps'); // Add roadmaps
 
   const index = [
     ...posts.map(post => ({
@@ -19,6 +20,14 @@ export async function GET() {
       category: 'Project',
       tags: proj.data.techStack || [],
       url: `/projects/${proj.slug}/`,
+    })),
+    // Spread mapped roadmaps into the index
+    ...roadmaps.map(map => ({
+      title: map.data.title,
+      description: map.data.description,
+      category: 'Roadmap',
+      tags: [map.data.category, map.data.difficulty],
+      url: `/careers/${map.slug}/`,
     }))
   ];
 

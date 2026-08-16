@@ -10,7 +10,7 @@ const { project } = Astro.props;
 const { Content } = await project.render();
 const breadcrumbs = [{ label: 'Home', url: '/' }, { label: 'Projects', url: '/projects' }, { label: project.data.title, url: `/projects/${project.slug}` }];
 ---
-<BaseLayout title={`${project.data.title} | AI Career Guide`} description={project.data.description} image={project.data.image}>
+<BaseLayout title={`${project.data.title} | AI Career Guide`} description={project.data.description} image={project.data.image} breadcrumbs={breadcrumbs}>
   <article class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <Breadcrumbs items={breadcrumbs} />
     <header class="mt-5 border-b border-[var(--color-border)] pb-8">

@@ -4,11 +4,37 @@ import Footer from '@/components/common/Footer.astro';
 import SEO from '@/components/seo/SEO.astro';
 import { ViewTransitions } from 'astro:transitions';
 import '@/styles/global.css';
-export interface Props { title?:string; description?:string; image?:string; canonical?:string; article?:boolean; pubDate?:Date; author?:string; updatedDate?:Date }
+export interface Props { title?:string; description?:string; image?:string; canonical?:string; article?:boolean; pubDate?:Date; author?:string; updatedDate?:Date; breadcrumbs?:{label:string;url:string}[] }
 const props=Astro.props;
 ---
 <!doctype html><html lang="en" class="h-full"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#0F172A"/>
-<script is:inline>(()=>{const s=localStorage.getItem('theme');const d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})();</script>
+<script is:inline>
+  (() => {
+    const getTheme = () => {
+      const stored = localStorage.getItem('theme');
+      if (stored === 'dark' || stored === 'light') return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    const applyTheme = (theme = getTheme()) => {
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      document.documentElement.style.colorScheme = theme;
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0B1120' : '#FFFFFF');
+    };
+    applyTheme();
+    document.addEventListener('astro:before-swap', (event) => {
+      applyTheme();
+      const nextTheme = getTheme();
+      event.newDocument.documentElement.classList.toggle('dark', nextTheme === 'dark');
+      event.newDocument.documentElement.style.colorScheme = nextTheme;
+      event.newDocument.querySelector('meta[name="theme-color"]')?.setAttribute('content', nextTheme === 'dark' ? '#0B1120' : '#FFFFFF');
+    });
+    document.addEventListener('astro:page-load', () => applyTheme());
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener?.('change', () => {
+      if (!localStorage.getItem('theme')) applyTheme();
+    });
+  })();
+</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="icon" type="image/png" href="/favicon.png"/><link rel="apple-touch-icon" href="/favicon.png"/><SEO {...props}/><ViewTransitions/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/></head>
 <body class="min-h-full bg-[var(--color-bg)] text-[var(--color-text-primary)]"><a href="#main-content" class="skip-link">Skip to content</a><Header/><main id="main-content" class="min-h-[60vh]"><slot/></main><Footer/>
 <script>function setupCodeBlocks(){document.querySelectorAll<HTMLPreElement>('.prose pre:not([data-code-ready])').forEach(pre=>{pre.dataset.codeReady='true';const wrapper=document.createElement('div');wrapper.className='code-wrapper';pre.parentNode?.insertBefore(wrapper,pre);wrapper.appendChild(pre);const header=document.createElement('div');header.className='code-header';const lang=(pre.querySelector('code')?.className.match(/language-([\w-]+)/)?.[1]||'code').toUpperCase();header.innerHTML=`<span>${lang}</span>`;const btn=document.createElement('button');btn.type='button';btn.textContent='Copy';btn.setAttribute('aria-label','Copy code');btn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(pre.querySelector('code')?.textContent||pre.textContent||'');btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1600);}catch{btn.textContent='Copy failed';setTimeout(()=>btn.textContent='Copy',1600);}});header.appendChild(btn);wrapper.insertBefore(header,pre);});}document.addEventListener('astro:page-load',setupCodeBlocks);</script></body></html>

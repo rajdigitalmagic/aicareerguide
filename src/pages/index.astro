@@ -11,7 +11,9 @@ const featured = sortedPosts.filter(post => post.data.featured).slice(0, 3);
 const fallbackFeatured = featured.length ? featured : sortedPosts.slice(0, 3);
 const featuredSlugs = new Set(fallbackFeatured.map(post => post.slug));
 const latest = sortedPosts.filter(post => !featuredSlugs.has(post.slug)).slice(0, 4);
-const roadmaps = (await getCollection('roadmaps')).filter(({ data }) => !data.featured || data.featured).slice(0, 6);
+const allRoadmaps = await getCollection('roadmaps');
+const featuredRoadmaps = allRoadmaps.filter(({ data }) => data.featured);
+const roadmaps = (featuredRoadmaps.length ? featuredRoadmaps : allRoadmaps).slice(0, 6);
 const projects = (await getCollection('projects', ({ data }) => !data.draft)).filter(({ data }) => data.featured).slice(0, 3);
 
 const categories = [

@@ -10,7 +10,7 @@ const { roadmap } = Astro.props;
 const { Content } = await roadmap.render();
 const breadcrumbs = [{ label: 'Home', url: '/' }, { label: 'Careers', url: '/careers' }, { label: roadmap.data.title, url: `/careers/${roadmap.slug}` }];
 ---
-<BaseLayout title={`${roadmap.data.title} | AI Career Guide`} description={roadmap.data.description} image={roadmap.data.image}>
+<BaseLayout title={`${roadmap.data.title} | AI Career Guide`} description={roadmap.data.description} image={roadmap.data.image} breadcrumbs={breadcrumbs}>
   <article class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <Breadcrumbs items={breadcrumbs} />
     <header class="mt-5 border-b border-[var(--color-border)] pb-8">

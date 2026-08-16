@@ -9,7 +9,7 @@ const types = ['All', 'Course', 'Book', 'Dataset', 'API', 'Roadmap'];
     <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Learn smarter</p>
     <h1 class="mt-2 text-4xl font-bold tracking-tight">Resources</h1>
     <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">Curated resources worth using. The goal is signal, not a giant directory.</p>
-    <div class="mt-8 flex flex-wrap gap-2" id="resource-filters">{types.map(type => <button class="resource-filter rounded-full border border-[var(--color-border)] px-4 py-2 text-sm" data-type={type}>{type}</button>)}</div>
+    <div class="mt-8 flex flex-wrap gap-2" id="resource-filters">{types.map(type => <button type="button" aria-pressed="false" class="resource-filter rounded-full border border-[var(--color-border)] px-4 py-2 text-sm" data-type={type}>{type}</button>)}</div>
     <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {resources.map(resource => <article class="resource-card flex flex-col rounded-2xl border border-[var(--color-border)] p-6" data-type={resource.data.type}><div class="flex items-center justify-between gap-3"><span class="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">{resource.data.type}</span><span class="text-xs text-[var(--color-text-muted)]">{resource.data.price}</span></div><h2 class="mt-3 text-xl font-bold">{resource.data.title}</h2><p class="mt-2 flex-1 text-sm leading-6 text-[var(--color-text-secondary)]">{resource.data.description}</p>{resource.data.provider && <p class="mt-4 text-xs text-[var(--color-text-muted)]">Provider: {resource.data.provider}</p>}<a href={resource.data.url} target="_blank" rel="noopener noreferrer" class="mt-5 font-semibold text-[var(--color-accent)] hover:underline">Open resource →</a></article>)}
     </div>
@@ -17,7 +17,7 @@ const types = ['All', 'Course', 'Book', 'Dataset', 'API', 'Roadmap'];
   <script>
     document.addEventListener('astro:page-load', () => {
       const buttons = document.querySelectorAll<HTMLButtonElement>('.resource-filter'); const cards = document.querySelectorAll<HTMLElement>('.resource-card');
-      const apply = (type='All') => { buttons.forEach(btn => btn.classList.toggle('active-filter', btn.dataset.type === type)); cards.forEach(card => card.classList.toggle('hidden', type !== 'All' && card.dataset.type !== type)); };
+      const apply = (type='All') => { buttons.forEach(btn => { const active=btn.dataset.type===type; btn.classList.toggle('active-filter', active); btn.setAttribute('aria-pressed', String(active)); }); cards.forEach(card => card.classList.toggle('hidden', type !== 'All' && card.dataset.type !== type)); };
       buttons.forEach(btn => btn.addEventListener('click', () => apply(btn.dataset.type || 'All'))); apply();
     });
   </script>

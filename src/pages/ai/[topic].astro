@@ -38,7 +38,7 @@ const filteredPosts = posts
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 const breadcrumbItems = [{ label: 'Home', url: '/' }, { label: 'AI', url: '/ai' }, { label: topic.title, url: `/ai/${slug}` }];
 ---
-<BaseLayout title={`${topic.title} | AI Career Guide`} description={topic.description}>
+<BaseLayout title={`${topic.title} | AI Career Guide`} description={topic.description} breadcrumbs={breadcrumbItems}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
     <Breadcrumbs items={breadcrumbItems} />
     <h1 class="mt-4 text-4xl font-bold tracking-tight">{topic.title}</h1>

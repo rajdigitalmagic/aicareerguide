@@ -14,14 +14,17 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
       class="w-48 sm:w-64 pl-9 pr-8 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-all text-sm"
       aria-label="Search"
       autocomplete="off"
+      aria-expanded="false"
+      aria-controls="search-results"
     />
     <Loader2 id="search-loading" class="absolute right-3 w-4 h-4 text-[var(--color-text-muted)] animate-spin hidden" />
   </div>
 
   <!-- Search Results Dropdown -->
-  <div 
-    id="search-results" 
+  <div
+    id="search-results"
     class="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-h-[60vh] overflow-y-auto bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl shadow-xl hidden z-50"
+    role="listbox"
   >
     <!-- Results are dynamically injected here -->
   </div>
@@ -32,11 +35,24 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
 
   let fuse: Fuse<any> | null = null;
   let isLoading = false;
+  let activeIndex = -1; // Tracks keyboard navigation focus
 
   const input = document.getElementById('search-input') as HTMLInputElement;
   const container = document.getElementById('search-container');
   const resultsEl = document.getElementById('search-results');
   const loadingEl = document.getElementById('search-loading');
+
+  // Utility to prevent XSS by escaping HTML characters
+  function escapeHtml(unsafe: string): string {
+    if (!unsafe) return '';
+    return unsafe
+      .toString()
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
   // Keyboard shortcut support (Ctrl+K or Cmd+K)
   document.addEventListener('keydown', (e) => {
@@ -60,14 +76,14 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
       
       fuse = new Fuse(data, {
         keys: [
-          { name: 'title', weight: 2 }, // Prioritize title matches
+          { name: 'title', weight: 2 },
           { name: 'description', weight: 1 },
           { name: 'category', weight: 1.5 },
           { name: 'tags', weight: 1.5 }
         ],
         threshold: 0.3,
         includeScore: true,
-        ignoreLocation: true // Helps find matches anywhere in the string
+        ignoreLocation: true
       });
     } catch (error) {
       console.error('Failed to load search index:', error);
@@ -80,28 +96,36 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
   // Render the search results into the dropdown
   function render(results: any[]) {
     if (!resultsEl) return;
-
+    
+    // Reset keyboard navigation state on new search
+    activeIndex = -1;
+    
     if (!results.length) {
       resultsEl.innerHTML = '<div class="p-4 text-sm text-center text-[var(--color-text-muted)]">No results found.</div>';
       resultsEl.classList.remove('hidden');
+      input?.setAttribute('aria-expanded', 'true');
       return;
     }
 
     let html = '<ul class="divide-y divide-[var(--color-border)]">';
     
-    // Limit to top 6 results to keep the UI clean
     results.slice(0, 6).forEach(({ item }) => {
-      const tagsHtml = item.tags && item.tags.length > 0 
-        ? `<span class="opacity-50">•</span> <span>${item.tags.slice(0, 2).join(', ')}</span>` 
-        : '';
+      // Safely escape all dynamic content before injecting
+      const safeTitle = escapeHtml(item.title);
+      const safeCategory = escapeHtml(item.category);
+      const safeUrl = escapeHtml(item.url);
+      
+      const safeTags = item.tags && item.tags.length > 0
+         ? `<span class="opacity-50">•</span> <span>${escapeHtml(item.tags.slice(0, 2).join(', '))}</span>`
+         : '';
 
       html += `
-        <li>
-          <a href="${item.url}" class="block p-4 hover:bg-[var(--color-bg-secondary)] transition-colors">
-            <div class="text-sm font-bold text-[var(--color-text-primary)] truncate">${item.title}</div>
+        <li role="presentation">
+          <a href="${safeUrl}" role="option" class="block p-4 hover:bg-[var(--color-bg-secondary)] focus:bg-[var(--color-bg-secondary)] focus:outline-none transition-colors">
+            <div class="text-sm font-bold text-[var(--color-text-primary)] truncate">${safeTitle}</div>
             <div class="text-xs text-[var(--color-text-muted)] mt-1 flex items-center gap-1.5 truncate">
-              <span class="text-[var(--color-accent)] font-semibold uppercase tracking-wider">${item.category}</span>
-              ${tagsHtml}
+              <span class="text-[var(--color-accent)] font-semibold uppercase tracking-wider">${safeCategory}</span>
+              ${safeTags}
             </div>
           </a>
         </li>
@@ -111,21 +135,42 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
     html += '</ul>';
     resultsEl.innerHTML = html;
     resultsEl.classList.remove('hidden');
+    input?.setAttribute('aria-expanded', 'true');
   }
+
+  // Handle Keyboard Navigation (Up/Down Arrows) within the Search Container
+  container?.addEventListener('keydown', (e) => {
+    const isDropdownVisible = !resultsEl?.classList.contains('hidden');
+    if (!isDropdownVisible) return;
+
+    const items = resultsEl?.querySelectorAll('a');
+    if (!items || items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+      items[activeIndex].focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + items.length) % items.length;
+      items[activeIndex].focus();
+    }
+  });
 
   // Event Listeners
   input?.addEventListener('focus', loadIndex);
-
+  
   input?.addEventListener('input', async (e) => {
-    await loadIndex(); // Ensure the index is loaded before searching
+    await loadIndex();
     const target = e.target as HTMLInputElement;
     const query = target.value.trim();
-
+    
     if (!query) {
       resultsEl?.classList.add('hidden');
+      input?.setAttribute('aria-expanded', 'false');
       return;
     }
-
+    
     if (fuse) {
       const results = fuse.search(query);
       render(results);
@@ -136,6 +181,7 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
   document.addEventListener('click', (e) => {
     if (container && !container.contains(e.target as Node)) {
       resultsEl?.classList.add('hidden');
+      input?.setAttribute('aria-expanded', 'false');
     }
   });
 
@@ -143,6 +189,7 @@ import { Search as SearchIcon, Loader2 } from 'lucide-astro';
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       resultsEl?.classList.add('hidden');
+      input?.setAttribute('aria-expanded', 'false');
       input?.blur();
     }
   });

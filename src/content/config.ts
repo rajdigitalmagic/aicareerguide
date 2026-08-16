@@ -7,11 +7,16 @@ const blogSchema = ({ image }) => z.object({
   pubDate: z.date(),
   updatedDate: z.date().optional(),
   author: z.string().default('AI Career Guide'),
-  category: z.enum(['AI', 'Career', 'Projects', 'Technology']),
+  category: z.string(),
+  topics: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  image: image().optional(), // <-- Updated to Astro's image object helper
-  draft: z.boolean().optional(),
+  image: image().optional(),
   readingTime: z.string().optional(),
+  featured: z.boolean().optional().default(false),
+  draft: z.boolean().optional().default(false),
+  canonical: z.string().url().optional(),
+  lastReviewed: z.date().optional(),
+  sources: z.array(z.string()).optional(),
 });
 
 const roadmapSchema = ({ image }) => z.object({
@@ -20,7 +25,7 @@ const roadmapSchema = ({ image }) => z.object({
   category: z.string(),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
   estimatedTime: z.string(),
-  image: image().optional(), // <-- Updated
+  image: image().optional(),
 });
 
 const projectSchema = z.object({
@@ -39,4 +44,4 @@ export const collections = {
   blog: defineCollection({ type: 'content', schema: blogSchema }),
   roadmaps: defineCollection({ type: 'content', schema: roadmapSchema }),
   projects: defineCollection({ type: 'content', schema: projectSchema }),
-};
+});

@@ -29,7 +29,11 @@ const categories = ['All', 'AI', 'Career', 'Projects', 'Technology'];
 
     <!-- Article Grid -->
     <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="articles-grid">
-      {sorted.map(post => <ArticleCard post={post} />)}
+      {sorted.map(post => (
+        <div class="article-card" data-category={post.data.category.toLowerCase()}>
+          <ArticleCard post={post} />
+        </div>
+      ))}
     </div>
     
     <!-- Empty State -->

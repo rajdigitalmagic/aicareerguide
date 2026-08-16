@@ -8,6 +8,15 @@ export interface Props { title?:string; description?:string; image?:string; cano
 const props=Astro.props;
 ---
 <!doctype html><html lang="en" class="h-full"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#0F172A"/>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q91ESRJBBL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Q91ESRJBBL');
+</script>
 <script is:inline>
   (() => {
     const getTheme = () => {

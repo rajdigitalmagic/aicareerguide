@@ -10,7 +10,7 @@ import Search from '@/components/Search.astro';
       <!-- Logo -->
       <div class="flex items-center">
         <a href="/" class="flex items-center gap-2.5 group">
-          <!-- Logo Image: Change 'logo.svg' to your actual file name -->
+          <!-- Logo Image -->
           <img 
             src="/logo.png" 
             alt="AI Career Guide Logo" 
@@ -39,8 +39,8 @@ import Search from '@/components/Search.astro';
         <Search />
         <ThemeToggle />
         
-        <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors" aria-label="Menu">
+        <!-- Mobile Menu Button (Updated with ARIA attributes) -->
+        <button id="mobile-menu-btn" aria-expanded="false" aria-controls="mobile-nav" class="md:hidden p-2 rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors" aria-label="Toggle menu">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
@@ -61,20 +61,38 @@ import Search from '@/components/Search.astro';
 </header>
 
 <script>
-  // Wrap the logic in astro:page-load
   document.addEventListener('astro:page-load', () => {
     const btn = document.getElementById('mobile-menu-btn');
     const nav = document.getElementById('mobile-nav');
 
-    // Toggle menu on click
+    // Helper function to handle closing the menu and resetting states
+    function closeMenu() {
+      nav?.classList.add('hidden');
+      btn?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = ''; // Unlock scroll
+    }
+
+    // Toggle menu & scroll lock on click
     btn?.addEventListener('click', () => {
-      nav?.classList.toggle('hidden');
+      const isHidden = nav?.classList.contains('hidden');
+      if (isHidden) {
+        nav?.classList.remove('hidden');
+        btn?.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden'; // Lock scroll
+      } else {
+        closeMenu();
+      }
     });
 
-    // Automatically hide the mobile menu if the screen resizes to desktop width
+    // Close menu when a link inside it is clicked
+    nav?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Automatically hide menu and unlock scroll if screen resizes to desktop
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 768) { // 768px is the 'md' breakpoint in Tailwind
-        nav?.classList.add('hidden');
+        closeMenu();
       }
     });
   });

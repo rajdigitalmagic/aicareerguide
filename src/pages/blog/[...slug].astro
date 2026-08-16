@@ -13,10 +13,15 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content, headings } = await post.render();
+
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const related = allPosts
   .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
   .slice(0, 3);
+
+// Calculate reading time
+const wordCount = post.body ? post.body.split(/\s+/).length : 0;
+const calculatedReadingTime = Math.ceil(wordCount / 200).toString();
 ---
 
 <ArticleLayout
@@ -27,7 +32,7 @@ const related = allPosts
   category={post.data.category}
   tags={post.data.tags || []}
   image={post.data.image}
-  readingTime={post.data.readingTime}
+  readingTime={post.data.readingTime || calculatedReadingTime}
   headings={headings}
   relatedPosts={related}
 >

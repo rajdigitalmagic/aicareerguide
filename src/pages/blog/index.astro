@@ -39,7 +39,7 @@ const categories = ['All', 'AI', 'Career', 'Projects', 'Technology'];
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('astro:page-load', () => {
       const filterBtns = document.querySelectorAll('.filter-btn');
       const articles = document.querySelectorAll('.article-card');
       const noArticlesMsg = document.getElementById('no-articles-msg');

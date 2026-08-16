@@ -6,7 +6,6 @@ author: "AI Career Guide"
 category: "AI"
 tags: ["roadmap", "career", "AI engineering", "machine learning"]
 featured: true
-image: "/images/ai-engineer-roadmap.jpg"
 ---
 
 # AI Engineer Roadmap 2026 – From Python to Production

@@ -3,7 +3,7 @@
 export interface Props {
   title?: string;
   description?: string;
-  image?: string;
+  image?: any;
   canonical?: string;
   article?: boolean;
   pubDate?: Date;
@@ -26,7 +26,8 @@ const desc = description || 'Practical AI, technology, and career guidance for p
 
 // Ensure absolute URLs for canonical and open graph images
 const canonicalURL = new URL(canonical || Astro.url.pathname, Astro.site).href;
-const imageURL = new URL(image, Astro.site).href;
+const imagePath = typeof image === 'string' ? image : image?.src;
+const imageURL = new URL(imagePath, Astro.site).href;
 
 // 1. Structured Data: Article Schema (if it's a blog post)
 const articleSchema = article ? {
@@ -45,7 +46,7 @@ const articleSchema = article ? {
     "name": siteTitle,
     "logo": {
       "@type": "ImageObject",
-      "url": new URL('/image/og-default.jpg', Astro.site).href
+      "url": new URL('/logo.png', Astro.site).href
     }
   },
   "mainEntityOfPage": {

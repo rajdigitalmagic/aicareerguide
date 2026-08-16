@@ -15,19 +15,22 @@ import { Sun, Moon } from 'lucide-astro';
 </button>
 
 <script>
-  const toggle = document.getElementById('theme-toggle');
-  
-  toggle?.addEventListener('click', () => {
-    const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
+  // Wrap the logic in astro:page-load so it re-runs on every page navigation
+  document.addEventListener('astro:page-load', () => {
+    const toggle = document.getElementById('theme-toggle');
     
-    // Determine the new theme
-    const newTheme = isDark ? 'light' : 'dark';
-    
-    // Apply the class to the <html> tag so Tailwind registers it
-    html.classList.toggle('dark', newTheme === 'dark');
-    
-    // Save the user's preference to localStorage so it persists on page refresh
-    localStorage.setItem('theme', newTheme);
+    toggle?.addEventListener('click', () => {
+      const html = document.documentElement;
+      const isDark = html.classList.contains('dark');
+      
+      // Determine the new theme
+      const newTheme = isDark ? 'light' : 'dark';
+      
+      // Apply the class to the <html> tag so Tailwind registers it
+      html.classList.toggle('dark', newTheme === 'dark');
+      
+      // Save the user's preference to localStorage so it persists on page refresh
+      localStorage.setItem('theme', newTheme);
+    });
   });
 </script>

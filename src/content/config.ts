@@ -32,6 +32,7 @@ const projectSchema = z.object({
   githubUrl: z.string().url().optional(),
   demoUrl: z.string().url().optional(),
   draft: z.boolean().default(false),
+  pubDate: z.date(),
 });
 
 export const collections = {

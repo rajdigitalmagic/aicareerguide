@@ -140,15 +140,13 @@ const breadcrumbItems = [
         "prose-p:text-[var(--color-text-secondary)] prose-p:leading-relaxed",
         "prose-a:text-[var(--color-accent)] prose-a:font-medium prose-a:no-underline hover:prose-a:underline",
         "prose-strong:text-[var(--color-text-primary)]",
-        "prose-code:text-[var(--color-text-primary)] prose-code:bg-[var(--color-bg-secondary)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:hidden prose-code:after:hidden",
-        "prose-pre:bg-[var(--color-bg-secondary)] prose-pre:text-[var(--color-text-primary)] prose-pre:border prose-pre:border-[var(--color-border)] prose-pre:rounded-xl",
+        "prose-code:before:hidden prose-code:after:hidden",
         "prose-blockquote:text-[var(--color-text-muted)] prose-blockquote:border-l-4 prose-blockquote:border-l-[var(--color-accent)] prose-blockquote:bg-[var(--color-bg-secondary)] prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg",
         "prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]",
         "[&_img]:rounded-xl [&_img]:border [&_img]:border-[var(--color-border)]"
       ]}>
         <slot />
       </div>
-    </div>
 
     <!-- Tags Display -->
     {tags && tags.length > 0 && (

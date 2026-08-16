@@ -6,7 +6,7 @@ author: "AI Career Guide"
 category: "AI"
 topics: ["deep-learning", "artificial-intelligence", "machine-learning", "neural-networks", "pytorch"]
 tags: ["deep learning", "neural networks", "PyTorch", "CNN", "transformers", "backpropagation", "deep learning roadmap", "learn deep learning", "AI"]
-image: "/images/blog/deep-learning-guide.webp"
+image: ../../assets/blog/deep-learning-guide.webp
 readingTime: "16"
 featured: false
 draft: false

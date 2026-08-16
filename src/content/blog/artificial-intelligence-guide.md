@@ -6,7 +6,7 @@ author: "AI Career Guide"
 category: "AI"
 topics: ["artificial-intelligence", "machine-learning", "deep-learning", "generative-ai", "ai-engineering"]
 tags: ["artificial intelligence", "AI", "machine learning", "deep learning", "generative AI", "AI engineering", "learn AI"]
-image: "/images/blog/artificial-intelligence-guide.webp"
+image: ../../assets/blog/artificial-intelligence-guide.webp
 readingTime: "10"
 featured: false
 draft: false

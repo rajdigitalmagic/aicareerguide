@@ -6,7 +6,7 @@ author: "AI Career Guide"
 category: "AI"
 topics: ["machine-learning", "artificial-intelligence", "data-science", "deep-learning", "ai-engineering"]
 tags: ["machine learning", "ML", "machine learning roadmap", "supervised learning", "unsupervised learning", "model training", "machine learning projects", "learn machine learning"]
-image: "/images/blog/machine-learning-guide.webp"
+image: ../../assets/blog/machine-learning-guide.webp
 readingTime: "14"
 featured: false
 draft: false

@@ -1,4 +1,4 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z, image } from 'astro:content';
 
 const url = z.string().url();
 
@@ -14,7 +14,7 @@ export const collections = {
       category: z.enum(['AI', 'Career', 'Projects', 'Technology']),
       topics: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
-      image: z.string().optional(),
+      image: image().optional(),
       readingTime: z.string().optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().default(false),

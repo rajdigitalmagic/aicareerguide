@@ -6,7 +6,7 @@ author: "AI Career Guide"
 category: "AI"
 topics: ["ai-engineering", "artificial-intelligence", "machine-learning", "llms", "software-engineering"]
 tags: ["AI engineering", "AI engineer", "LLM engineering", "MLOps", "RAG", "AI systems", "AI deployment", "AI projects", "machine learning engineering"]
-image: "/images/blog/ai-engineering-guide.webp"
+image: ../../assets/blog/ai-engineering-guide.webp
 readingTime: "17"
 featured: false
 draft: false

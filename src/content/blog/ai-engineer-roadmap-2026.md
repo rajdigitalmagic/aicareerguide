@@ -5,6 +5,7 @@ pubDate: 2026-08-15
 author: "AI Career Guide"
 category: "AI"
 tags: ["roadmap", "career", "AI engineering", "machine learning"]
+image: "/images/ai-engineer-roadmap.jpg"
 featured: true
 ---
 

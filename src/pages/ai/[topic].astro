@@ -1,69 +1,39 @@
 ---
-// src/pages/ai/[topic].astro
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import ArticleCard from '@/components/cards/ArticleCard.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import { getCollection } from 'astro:content';
 
-export async function getStaticPaths() {
-  const topics = [
-    { slug: 'ml', title: 'Machine Learning', description: 'Dive deep into algorithms, models, and predictive analytics.' },
-    { slug: 'llms', title: 'Large Language Models', description: 'Understand the architecture and application of transformers and LLMs.' },
-    { slug: 'gen-ai', title: 'Generative AI', description: 'Explore systems that generate text, images, and code.' },
-    { slug: 'ai-engineering', title: 'AI Engineering', description: 'Learn how to deploy and scale AI systems in production.' }
-  ];
-
-  return topics.map(topic => ({
-    params: { topic: topic.slug },
-    props: { topic },
-  }));
-}
-
-const { topic } = Astro.props;
-
-// Fetch all published blog posts
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-
-// Filter the posts to only show ones relevant to this specific topic.
-// This looks for a tag matching the topic slug (e.g., "ml", "llms") or falls back to showing all "AI" category posts if no tags match yet.
-const topicAliases: Record<string, string[]> = {
-  ml: ['ml', 'machine learning'],
-  llms: ['llm', 'llms', 'large language model', 'large language models'],
-  'gen-ai': ['gen-ai', 'generative ai', 'generative artificial intelligence'],
-  'ai-engineering': ['ai-engineering', 'ai engineering'],
+const topics = {
+  'machine-learning': { title: 'Machine Learning', description: 'Algorithms, evaluation, feature engineering, and practical machine learning.', aliases: ['machine learning', 'ml'] },
+  'deep-learning': { title: 'Deep Learning', description: 'Neural networks, PyTorch, CNNs, transformers, and modern deep learning.', aliases: ['deep learning', 'dl'] },
+  'generative-ai': { title: 'Generative AI', description: 'Practical systems for generation, RAG, agents, and multimodal applications.', aliases: ['generative ai', 'gen-ai', 'generative artificial intelligence'] },
+  'llms': { title: 'Large Language Models', description: 'Understand LLMs from tokenization and transformers to evaluation and production.', aliases: ['llm', 'llms', 'large language model', 'large language models'] },
+  'ai-engineering': { title: 'AI Engineering', description: 'Software engineering practices for deploying and operating AI systems.', aliases: ['ai engineering', 'ai-engineering'] },
 };
 
-const aliases = topicAliases[topic.slug] ?? [topic.slug];
-const filteredPosts = allPosts.filter(post =>
-  (post.data.tags ?? []).some(tag => {
-    const normalized = tag.toLowerCase().trim();
-    return aliases.includes(normalized) || aliases.includes(normalized.replace(/\s+/g, '-'));
+export function getStaticPaths() {
+  return Object.entries(topics).map(([slug, topic]) => ({ params: { topic: slug }, props: { topic, slug } }));
+}
+
+const { topic, slug } = Astro.props;
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const normalized = (value: string) => value.toLowerCase().trim().replace(/\s+/g, '-');
+const filteredPosts = posts
+  .filter(post => {
+    const values = [...(post.data.topics ?? []), ...(post.data.tags ?? [])].map(normalized);
+    return topic.aliases.some(alias => values.includes(normalized(alias))) || values.includes(slug);
   })
-);
-
-const breadcrumbItems = [
-  { label: 'Home', url: '/' },
-  { label: 'AI', url: '/ai' },
-  { label: topic.title, url: `/ai/${topic.slug}` }
-];
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const breadcrumbItems = [{ label: 'Home', url: '/' }, { label: 'AI', url: '/ai' }, { label: topic.title, url: `/ai/${slug}` }];
 ---
-
 <BaseLayout title={`${topic.title} | AI Career Guide`} description={topic.description}>
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
     <Breadcrumbs items={breadcrumbItems} />
-    
-    <h1 class="text-4xl font-bold text-[var(--color-text-primary)] mt-4">{topic.title}</h1>
-    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">{topic.description}</p>
-    
+    <h1 class="mt-4 text-4xl font-bold tracking-tight">{topic.title}</h1>
+    <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">{topic.description}</p>
     <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {filteredPosts.length > 0 ? (
-        filteredPosts.map(post => <ArticleCard post={post} />)
-      ) : (
-        <div class="col-span-full py-12 text-center border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-secondary)]">
-          <p class="text-[var(--color-text-muted)]">Content for {topic.title} is currently being engineered. Check back soon.</p>
-        </div>
-      )}
+      {filteredPosts.length ? filteredPosts.map(post => <ArticleCard post={post} />) : <div class="col-span-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-10 text-center"><p class="text-[var(--color-text-secondary)]">No articles are tagged for this topic yet. More practical guides are being added.</p><a href="/blog" class="mt-4 inline-block font-semibold text-[var(--color-accent)] hover:underline">Browse all articles →</a></div>}
     </div>
   </div>
 </BaseLayout>

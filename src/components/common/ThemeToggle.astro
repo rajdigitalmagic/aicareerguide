@@ -1,36 +1,4 @@
----
-// src/components/common/ThemeToggle.astro
-import { Sun, Moon } from 'lucide-astro';
----
-
-<button 
-  id="theme-toggle" 
-  class="p-2 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-accent)] transition-colors" 
-  aria-label="Toggle theme"
->
-  <!-- The Moon shows in Light Mode -->
-  <Moon id="theme-icon-dark" class="w-5 h-5 block dark:hidden" />
-  <!-- The Sun shows in Dark Mode -->
-  <Sun id="theme-icon-light" class="w-5 h-5 hidden dark:block" />
-</button>
-
+<button id="theme-toggle" type="button" class="min-h-11 min-w-11 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]" aria-label="Toggle dark mode" title="Toggle dark mode"><svg id="theme-moon" class="mx-auto h-5 w-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8Z"/></svg><svg id="theme-sun" class="mx-auto hidden h-5 w-5 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/></svg></button>
 <script>
-  // Wrap the logic in astro:page-load so it re-runs on every page navigation
-  document.addEventListener('astro:page-load', () => {
-    const toggle = document.getElementById('theme-toggle');
-    
-    toggle?.addEventListener('click', () => {
-      const html = document.documentElement;
-      const isDark = html.classList.contains('dark');
-      
-      // Determine the new theme
-      const newTheme = isDark ? 'light' : 'dark';
-      
-      // Apply the class to the <html> tag so Tailwind registers it
-      html.classList.toggle('dark', newTheme === 'dark');
-      
-      // Save the user's preference to localStorage so it persists on page refresh
-      localStorage.setItem('theme', newTheme);
-    });
-  });
+  document.addEventListener('astro:page-load',()=>{const button=document.getElementById('theme-toggle');if(!button)return;button.onclick=()=>{const dark=document.documentElement.classList.toggle('dark');localStorage.setItem('theme',dark?'dark':'light');button.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');};});
 </script>

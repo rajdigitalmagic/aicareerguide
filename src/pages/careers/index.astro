@@ -1,27 +1,15 @@
 ---
-// src/pages/careers/index.astro
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-
-const roadmaps = await getCollection('roadmaps');
-
+const roadmaps = (await getCollection('roadmaps')).sort((a,b) => Number(b.data.featured) - Number(a.data.featured));
 ---
-
-<BaseLayout title="Tech & AI Career Roadmaps" description="Step-by-step roadmaps to land your dream role in technology and AI.">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Career Roadmaps</h1>
-    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Step-by-step guides from learning the fundamentals to passing technical interviews.</p>
-    
-    <div class="mt-8 grid gap-6 md:grid-cols-2">
-      {roadmaps.map(roadmap => (
-        <a href={`/careers/${roadmap.slug}`} class="block border border-[var(--color-border)] rounded-xl p-6 hover:shadow-md transition-shadow bg-[var(--color-bg)] group">
-          <h3 class="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors">{roadmap.data.title}</h3>
-          <p class="mt-2 text-[var(--color-text-secondary)]">{roadmap.data.description}</p>
-          <div class="mt-4 text-sm font-semibold text-[var(--color-accent)] flex items-center gap-1">
-            View Roadmap <span aria-hidden="true">&rarr;</span>
-          </div>
-        </a>
-      ))}
+<BaseLayout title="AI & Technology Career Roadmaps" description="Step-by-step roadmaps for AI engineering, machine learning, software engineering, data science, research, and AI product building.">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Career</p>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">Career Roadmaps</h1>
+    <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">Choose a target role, learn the fundamentals, build evidence through projects, and prepare for interviews.</p>
+    <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {roadmaps.map(roadmap => <a href={`/careers/${roadmap.slug}`} class="group flex h-full flex-col rounded-2xl border border-[var(--color-border)] p-6 hover:border-[var(--color-accent)] hover:shadow-sm"><div class="flex items-center justify-between gap-3"><span class="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">{roadmap.data.category}</span><span class="text-xs text-[var(--color-text-muted)]">{roadmap.data.difficulty}</span></div><h2 class="mt-4 text-xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)]">{roadmap.data.title}</h2><p class="mt-2 flex-1 text-sm leading-6 text-[var(--color-text-secondary)]">{roadmap.data.description}</p><div class="mt-5 border-t border-[var(--color-border)] pt-4 text-sm text-[var(--color-text-muted)]">Estimated: {roadmap.data.estimatedTime}</div></a>)}
     </div>
   </div>
 </BaseLayout>

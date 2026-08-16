@@ -1,63 +1,25 @@
 ---
 import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import { getCollection } from 'astro:content';
-
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => !data.draft);
-  return projects.map(project => ({
-    params: { slug: project.slug },
-    props: { project },
-  }));
+  return projects.map(project => ({ params: { slug: project.slug }, props: { project } }));
 }
-
 const { project } = Astro.props;
 const { Content } = await project.render();
+const breadcrumbs = [{ label: 'Home', url: '/' }, { label: 'Projects', url: '/projects' }, { label: project.data.title, url: `/projects/${project.slug}` }];
 ---
-
-<BaseLayout
-  title={`${project.data.title} | AI Career Guide`}
-  description={project.data.description}
-  article={false}
->
-  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    
-    <header class="mb-10 border-b border-[var(--color-border)] pb-8">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-accent)] bg-[var(--color-bg-secondary)] px-3 py-1 rounded-md border border-[var(--color-border)]">
-          {project.data.difficulty}
-        </span>
-        <span class="text-sm text-[var(--color-text-muted)]">
-          ⏱️ {project.data.timeToBuild}
-        </span>
-      </div>
-      
-      <h1 class="text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] leading-tight">
-        {project.data.title}
-      </h1>
-      <p class="mt-4 text-xl text-[var(--color-text-secondary)]">
-        {project.data.description}
-      </p>
-
-      <div class="mt-6 flex flex-wrap gap-2">
-        {project.data.techStack.map((tech: string) => (
-          <span class="px-3 py-1 text-sm font-medium rounded-full bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
-            {tech}
-          </span>
-        ))}
-      </div>
-
+<BaseLayout title={`${project.data.title} | AI Career Guide`} description={project.data.description} image={project.data.image}>
+  <article class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <Breadcrumbs items={breadcrumbs} />
+    <header class="mt-5 border-b border-[var(--color-border)] pb-8">
+      <div class="flex flex-wrap gap-2"><span class="pill">{project.data.category}</span><span class="pill">{project.data.difficulty}</span><span class="pill">{project.data.timeToBuild}</span></div>
+      <h1 class="mt-5 text-4xl sm:text-5xl font-bold tracking-tight">{project.data.title}</h1>
+      <p class="mt-4 max-w-3xl text-xl leading-8 text-[var(--color-text-secondary)]">{project.data.description}</p>
+      <div class="mt-5 flex flex-wrap gap-2">{project.data.techStack.map(tech => <span class="tag">{tech}</span>)}</div>
+      <div class="mt-6 flex flex-wrap gap-3">{project.data.githubUrl && <a href={project.data.githubUrl} target="_blank" rel="noopener noreferrer" class="button-secondary">GitHub →</a>}{project.data.demoUrl && <a href={project.data.demoUrl} target="_blank" rel="noopener noreferrer" class="button-primary">Live Demo →</a>}</div>
     </header>
-
-    <div class="prose prose-lg max-w-none text-[var(--color-text-secondary)]
-      prose-headings:text-[var(--color-text-primary)] prose-headings:font-bold
-      prose-p:leading-relaxed
-      prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline
-      prose-strong:text-[var(--color-text-primary)]
-      prose-pre:bg-[var(--color-bg-secondary)] prose-pre:border prose-pre:border-[var(--color-border)]
-      prose-code:text-[var(--color-text-primary)] prose-code:bg-[var(--color-bg-secondary)]
-      marker:text-[var(--color-text-muted)]">
-      <Content />
-    </div>
-
+    <div class="mt-10 prose prose-lg max-w-article text-[var(--color-text-secondary)] prose-headings:text-[var(--color-text-primary)] prose-headings:font-bold prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline prose-strong:text-[var(--color-text-primary)]"><Content /></div>
   </article>
 </BaseLayout>

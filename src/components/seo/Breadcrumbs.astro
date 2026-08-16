@@ -1,52 +1,7 @@
 ---
-// src/components/seo/Breadcrumbs.astro
-export interface Breadcrumb {
-  label: string;
-  url: string;
-}
-
-export interface Props {
-  items: Breadcrumb[];
-}
-
-const { items } = Astro.props;
-
-// Generate the JSON-LD schema for Google
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": items.map((item, index) => ({
-    "@type": "ListItem",
-    "position": index + 1,
-    "name": item.label,
-    // Astro.site ensures the schema uses the explicit absolute URL defined in astro.config.mjs
-    "item": new URL(item.url, Astro.site).href 
-   }))
-}
+export interface Breadcrumb { label:string; url:string }
+const { items } = Astro.props as { items: Breadcrumb[] };
+const schema={ '@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':items.map((item,index)=>({'@type':'ListItem',position:index+1,name:item.label,item:new URL(item.url,Astro.site).href})) };
 ---
-
-<nav aria-label="Breadcrumb" class="mb-6">
-  <ol class="flex flex-wrap items-center space-x-2 text-sm text-[var(--color-text-muted)]">
-    {items.map((item, index) => (
-      <li class="flex items-center">
-        {index > 0 && (
-          <svg class="w-4 h-4 mx-2 text-[var(--color-border)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        )}
-        {index === items.length - 1 ? (
-          <span class="text-[var(--color-text-primary)] font-medium truncate" aria-current="page">
-            {item.label}
-          </span>
-        ) : (
-          <a href={item.url} class="hover:text-[var(--color-accent)] transition-colors">
-            {item.label}
-          </a>
-        )}
-      </li>
-    ))}
-  </ol>
-</nav>
-
-<!-- Inject the Schema into the HTML -->
-<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+<nav aria-label="Breadcrumb" class="mb-6"><ol class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-muted)]">{items.map((item,index)=><li class="flex items-center gap-2">{index>0&&<span aria-hidden="true">/</span>}{index===items.length-1?<span aria-current="page" class="font-medium text-[var(--color-text-primary)]">{item.label}</span>:<a href={item.url} class="hover:text-[var(--color-accent)] hover:underline">{item.label}</a>}</li>)}</ol></nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)}/>

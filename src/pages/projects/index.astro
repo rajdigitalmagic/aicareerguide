@@ -1,33 +1,39 @@
 ---
-// src/pages/projects/index.astro
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-
-const allProjects = await getCollection('projects', ({ data }) => !data.draft);
+const projects = await getCollection('projects', ({ data }) => !data.draft);
+const categories = ['All', 'AI', 'ML', 'LLM', 'Software'];
 const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 ---
-
-<BaseLayout title="AI Projects - Build Your Portfolio" description="Practical AI and software engineering projects from beginner to advanced.">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Build Something</h1>
-    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Hands-on tutorials to master algorithms, data structures, and production AI.</p>
-    
-    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {allProjects.map(project => (
-        <a href={`/projects/${project.slug}`} class="block border border-[var(--color-border)] rounded-xl p-6 hover:shadow-md transition-shadow bg-[var(--color-bg)]">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wide">{project.data.difficulty}</span>
-            <span class="text-xs text-[var(--color-text-muted)]">{project.data.timeToBuild}</span>
-          </div>
-          <h3 class="mt-3 text-xl font-bold text-[var(--color-text-primary)]">{project.data.title}</h3>
-          <p class="mt-2 text-sm text-[var(--color-text-secondary)] line-clamp-2">{project.data.description}</p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            {project.data.techStack.slice(0, 3).map(tech => (
-              <span class="px-2 py-1 bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] text-xs rounded-md">{tech}</span>
-            ))}
-          </div>
-        </a>
-      ))}
+<BaseLayout title="AI & Software Projects" description="Practical AI, machine learning, LLM, and software projects for building a strong technical portfolio.">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Build</p>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">Build Something</h1>
+    <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">Structured projects from beginner to advanced, with clear technologies, outcomes, and implementation steps.</p>
+    <div class="mt-8 flex flex-wrap gap-2" id="project-filters">
+      {categories.map(value => <button class="filter-btn rounded-full border border-[var(--color-border)] px-4 py-2 text-sm" data-category={value}>{value}</button>)}
+      <span class="mx-1 hidden sm:block w-px bg-[var(--color-border)]"></span>
+      {difficulties.map(value => <button class="difficulty-btn rounded-full border border-[var(--color-border)] px-4 py-2 text-sm" data-difficulty={value}>{value}</button>)}
+    </div>
+    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="projects-grid">
+      {projects.map(project => <a href={`/projects/${project.slug}`} class="project-card group rounded-2xl border border-[var(--color-border)] p-6 hover:border-[var(--color-accent)] hover:shadow-sm" data-category={project.data.category} data-difficulty={project.data.difficulty}><div class="flex justify-between gap-3"><span class="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">{project.data.category}</span><span class="text-xs text-[var(--color-text-muted)]">{project.data.difficulty}</span></div><h2 class="mt-3 text-xl font-bold group-hover:text-[var(--color-accent)]">{project.data.title}</h2><p class="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">{project.data.description}</p><div class="mt-5 flex flex-wrap gap-2">{project.data.techStack.slice(0,4).map(tech => <span class="tag">{tech}</span>)}</div><p class="mt-5 text-xs text-[var(--color-text-muted)]">Typical build time: {project.data.timeToBuild}</p></a>)}
     </div>
   </div>
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      const categoryButtons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+      const difficultyButtons = document.querySelectorAll<HTMLButtonElement>('.difficulty-btn');
+      const cards = document.querySelectorAll<HTMLElement>('.project-card');
+      let category = 'All'; let difficulty = 'All';
+      const update = () => {
+        [...categoryButtons, ...difficultyButtons].forEach(btn => btn.classList.remove('active-filter'));
+        categoryButtons.forEach(btn => { if (btn.dataset.category === category) btn.classList.add('active-filter'); });
+        difficultyButtons.forEach(btn => { if (btn.dataset.difficulty === difficulty) btn.classList.add('active-filter'); });
+        cards.forEach(card => { const okCat = category === 'All' || card.dataset.category === category; const okDiff = difficulty === 'All' || card.dataset.difficulty === difficulty; card.classList.toggle('hidden', !(okCat && okDiff)); });
+      };
+      categoryButtons.forEach(btn => btn.addEventListener('click', () => { category = btn.dataset.category || 'All'; update(); }));
+      difficultyButtons.forEach(btn => btn.addEventListener('click', () => { difficulty = btn.dataset.difficulty || 'All'; update(); }));
+      update();
+    });
+  </script>
 </BaseLayout>

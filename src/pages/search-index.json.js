@@ -1,37 +1,19 @@
-// src/pages/search-index.json.js
 import { getCollection } from 'astro:content';
 
 export async function GET() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
-  const projects = await getCollection('projects', ({ data }) => !data.draft);
-  const roadmaps = await getCollection('roadmaps'); // Add roadmaps
-
+  const [posts, projects, roadmaps, tools, resources] = await Promise.all([
+    getCollection('blog', ({ data }) => !data.draft),
+    getCollection('projects', ({ data }) => !data.draft),
+    getCollection('roadmaps'),
+    getCollection('tools', ({ data }) => !data.draft),
+    getCollection('resources', ({ data }) => !data.draft),
+  ]);
   const index = [
-    ...posts.map(post => ({
-      title: post.data.title,
-      description: post.data.description,
-      category: post.data.category,
-      tags: [...(post.data.tags || []), ...(post.data.topics || [])],
-      url: `/blog/${post.slug}/`,
-    })),
-    ...projects.map(proj => ({
-      title: proj.data.title,
-      description: proj.data.description,
-      category: 'Project',
-      tags: proj.data.techStack || [],
-      url: `/projects/${proj.slug}/`,
-    })),
-    // Spread mapped roadmaps into the index
-    ...roadmaps.map(map => ({
-      title: map.data.title,
-      description: map.data.description,
-      category: 'Roadmap',
-      tags: [map.data.category, map.data.difficulty],
-      url: `/careers/${map.slug}/`,
-    }))
+    ...posts.map(item => ({ title:item.data.title, description:item.data.description, category:item.data.category, tags:[...(item.data.tags||[]),...(item.data.topics||[])], url:`/blog/${item.slug}` })),
+    ...projects.map(item => ({ title:item.data.title, description:item.data.description, category:item.data.category, tags:[...(item.data.techStack||[]),...(item.data.skills||[])], url:`/projects/${item.slug}` })),
+    ...roadmaps.map(item => ({ title:item.data.title, description:item.data.description, category:'Career', tags:[item.data.category,item.data.difficulty,...(item.data.skills||[])], url:`/careers/${item.slug}` })),
+    ...tools.map(item => ({ title:item.data.name, description:item.data.description, category:'Tool', tags:[item.data.category,...(item.data.tags||[])], url:item.data.url })),
+    ...resources.map(item => ({ title:item.data.title, description:item.data.description, category:'Resource', tags:[item.data.type,item.data.category,...(item.data.tags||[])], url:item.data.url })),
   ];
-
-  return new Response(JSON.stringify(index), {
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=3600' },
-  });
+  return new Response(JSON.stringify(index), { headers:{'Content-Type':'application/json','Cache-Control':'public, max-age=3600'} });
 }

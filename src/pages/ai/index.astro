@@ -1,24 +1,24 @@
 ---
-// src/pages/ai/index.astro
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import CategoryCard from '@/components/cards/CategoryCard.astro';
+import { getCollection } from 'astro:content';
 
-const categories = [
-  { name: 'Machine Learning', href: '/ai/ml', icon: '🤖' },
-  { name: 'Deep Learning', href: '/ai/ml', icon: '🧠' },
-  { name: 'Generative AI', href: '/ai/gen-ai', icon: '✨' },
-  { name: 'LLMs', href: '/ai/llms', icon: '📚' },
-  { name: 'AI Engineering', href: '/ai/ai-engineering', icon: '⚙️' }
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const topics = [
+  { slug: 'machine-learning', name: 'Machine Learning', description: 'Supervised learning, evaluation, feature engineering, and practical ML.', icon: '🧠' },
+  { slug: 'deep-learning', name: 'Deep Learning', description: 'Neural networks, PyTorch, CNNs, transformers, and representation learning.', icon: '🔬' },
+  { slug: 'generative-ai', name: 'Generative AI', description: 'Build useful systems around generation, RAG, agents, and multimodal models.', icon: '✨' },
+  { slug: 'llms', name: 'LLMs', description: 'Understand tokens, embeddings, transformers, prompting, evaluation, and deployment.', icon: '🤖' },
+  { slug: 'ai-engineering', name: 'AI Engineering', description: 'Turn models into reliable software with APIs, deployment, testing, and MLOps.', icon: '⚙️' },
 ];
+const aiPosts = posts.filter(post => post.data.category === 'AI').length;
 ---
-
-<BaseLayout title="Explore AI Topics" description="Learn the fundamentals and advanced concepts of Artificial Intelligence.">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Explore AI</h1>
-    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Deep dives into the algorithms, models, and math powering the future.</p>
-    
-    <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-      {categories.map(cat => <CategoryCard category={cat} />)}
-    </div>
+<BaseLayout title="AI Learning Hub" description="Practical guides to machine learning, deep learning, generative AI, LLMs, and AI engineering.">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Learn</p>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">Explore AI</h1>
+    <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">Build the fundamentals first, then move toward modern AI systems and production engineering.</p>
+    <div class="mt-6 flex flex-wrap gap-3 text-sm text-[var(--color-text-muted)]"><span>{aiPosts} AI articles</span><span>•</span><span>Project-first learning</span><span>•</span><span>Career-oriented</span></div>
+    <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">{topics.map(topic => <CategoryCard category={{ name: topic.name, href: `/ai/${topic.slug}`, icon: topic.icon }} />)}</div>
   </div>
 </BaseLayout>

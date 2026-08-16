@@ -1,43 +1,21 @@
 ---
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 ---
-
-<BaseLayout title="Contact AI Career Guide" description="Get in touch with the AI Career Guide team.">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Contact Us</h1>
-    
-    <div class="mt-8 prose prose-lg max-w-none text-[var(--color-text-secondary)]">
-      <p>
-        We’d love to hear from you. Whether you have a question, a suggestion, a partnership proposal, or just want to say hello – feel free to reach out.
-      </p>
-    </div>
-
-    <div class="mt-8 prose prose-lg max-w-none 
-  text-[var(--color-text-secondary)] 
-  prose-headings:text-[var(--color-text-primary)] 
-  prose-a:text-[var(--color-accent)] prose-a:no-underline hover:prose-a:underline 
-  prose-strong:text-[var(--color-text-primary)] 
-  prose-ul:text-[var(--color-text-secondary)] prose-ol:text-[var(--color-text-secondary)] marker:text-[var(--color-text-muted)]">
-      <form action="#" method="POST" class="space-y-6">
-        <div>
-          <label for="name" class="block text-sm font-medium text-[var(--color-text-primary)]">Your Name</label>
-          <input type="text" id="name" name="name" required class="mt-1 w-full px-4 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-colors" />
-        </div>
-        <div>
-          <label for="email" class="block text-sm font-medium text-[var(--color-text-primary)]">Email Address</label>
-          <input type="email" id="email" name="email" required class="mt-1 w-full px-4 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-colors" />
-        </div>
-        <div>
-          <label for="message" class="block text-sm font-medium text-[var(--color-text-primary)]">Message</label>
-          <textarea id="message" name="message" rows="6" required class="mt-1 w-full px-4 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-colors"></textarea>
-        </div>
-        <button type="submit" class="px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">
-          Send Message
-        </button>
+<BaseLayout title="Contact AI Career Guide" description="Contact AI Career Guide with questions, suggestions, or collaboration ideas.">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <h1 class="text-4xl font-bold tracking-tight">Contact</h1>
+    <p class="mt-4 text-lg text-[var(--color-text-secondary)]">Questions, corrections, suggestions, or collaboration ideas are welcome.</p>
+    <div class="mt-8 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6">
+      <form id="contact-form" class="space-y-5">
+        <div><label for="name" class="block text-sm font-semibold">Your name</label><input id="name" name="name" required autocomplete="name" class="mt-2 min-h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4" /></div>
+        <div><label for="email" class="block text-sm font-semibold">Email address</label><input id="email" name="email" type="email" required autocomplete="email" class="mt-2 min-h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4" /></div>
+        <div><label for="message" class="block text-sm font-semibold">Message</label><textarea id="message" name="message" rows="7" required class="mt-2 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3"></textarea></div>
+        <button type="submit" class="button-primary">Prepare message</button>
       </form>
-      <p class="mt-4 text-xs text-[var(--color-text-muted)]">
-        <em>Note: This is a static placeholder – we’ll connect a backend or email service later.</em>
-      </p>
+      <p id="contact-status" class="mt-4 text-sm text-[var(--color-text-muted)]">This static site does not submit messages yet. A form provider can be connected later.</p>
     </div>
   </div>
+  <script>
+    document.addEventListener('astro:page-load',()=>{const form=document.getElementById('contact-form') as HTMLFormElement|null;const status=document.getElementById('contact-status');form?.addEventListener('submit',e=>{e.preventDefault();if(status)status.textContent='Thanks. The form is ready, but message delivery is not connected yet. Add a form provider before production.';});});
+  </script>
 </BaseLayout>

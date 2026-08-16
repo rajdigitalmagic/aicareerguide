@@ -1,9 +1,10 @@
-<div class="border border-[var(--color-border)] rounded-2xl p-6 bg-[var(--color-bg-secondary)] text-center">
-  <h3 class="text-xl font-bold text-[var(--color-text-primary)]">Get Smarter About AI & Your Career</h3>
-  <p class="mt-1 text-[var(--color-text-secondary)]">Weekly practical AI & career insights.</p>
-  <form class="mt-4 max-w-md mx-auto flex flex-col sm:flex-row gap-3" action="#" method="POST">
-    <input type="email" placeholder="your@email.com" required class="flex-1 px-4 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-colors" />
-    <button type="submit" class="px-6 py-2 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">Subscribe</button>
-  </form>
-  <p class="mt-2 text-xs text-[var(--color-text-muted)]">No spam. Unsubscribe anytime.</p>
+<div class="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-7 text-center">
+  <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Newsletter</p>
+  <h2 class="mt-2 text-2xl font-bold">Get smarter about AI & your career.</h2>
+  <p class="mt-2 text-[var(--color-text-secondary)]">Weekly practical insights. No content farm, no unnecessary noise.</p>
+  <form id="newsletter-form" class="mt-6 mx-auto flex max-w-xl flex-col gap-3 sm:flex-row"><label class="sr-only" for="newsletter-email">Email address</label><input id="newsletter-email" name="email" type="email" autocomplete="email" required placeholder="your@email.com" class="min-h-11 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4 text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" /><button class="min-h-11 rounded-lg bg-[var(--color-accent)] px-6 font-semibold text-white hover:bg-[var(--color-accent-hover)]" type="submit">Subscribe</button></form>
+  <p id="newsletter-status" class="mt-3 text-xs text-[var(--color-text-muted)]">Newsletter provider can be connected later. Your email is not submitted yet.</p>
 </div>
+<script>
+  document.addEventListener('astro:page-load',()=>{const form=document.getElementById('newsletter-form') as HTMLFormElement|null;const status=document.getElementById('newsletter-status');form?.addEventListener('submit',e=>{e.preventDefault();if(status)status.textContent='Newsletter signup is coming soon. The form is ready for a provider integration.';});});
+</script>

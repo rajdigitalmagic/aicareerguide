@@ -1,106 +1,24 @@
 ---
-// src/pages/blog/index.astro
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import ArticleCard from '@/components/cards/ArticleCard.astro';
 import { getCollection } from 'astro:content';
-
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const sorted = allPosts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
-
+const sorted = [...allPosts].sort((a,b)=>b.data.pubDate.getTime()-a.data.pubDate.getTime());
+const featured = sorted.find(post => post.data.featured) ?? sorted[0];
+const latest = featured ? sorted.filter(post => post.slug !== featured.slug) : sorted;
 const categories = ['All', 'AI', 'Career', 'Projects', 'Technology'];
 ---
-
-<BaseLayout title="Blog | Practical AI & Career Insights" description="Articles on AI, technology, careers, and projects.">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold text-[var(--color-text-primary)]">Blog</h1>
-    <p class="mt-2 text-lg text-[var(--color-text-secondary)]">Practical knowledge for AI and technology careers.</p>
-    
-    <!-- Category Filter Buttons -->
-    <div class="mt-6 flex flex-wrap gap-2" id="category-filters">
-      {categories.map(cat => (
-        <button 
-          data-filter={cat.toLowerCase()} 
-          class="filter-btn px-4 py-1 rounded-full text-sm font-medium transition-colors bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
-        >
-          {cat}
-        </button>
-      ))}
-    </div>
-
-    <!-- Article Grid -->
-    <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="articles-grid">
-      {sorted.map(post => (
-        <div class="article-card" data-category={post.data.category.toLowerCase()}>
-          <ArticleCard post={post} />
-        </div>
-      ))}
-    </div>
-    
-    <!-- Empty State -->
-    <div id="no-articles-msg" class="hidden mt-8 text-center py-12 border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-secondary)]">
-      <p class="text-[var(--color-text-muted)]">No articles found for this category yet.</p>
-    </div>
+<BaseLayout title="Blog | AI Career Guide" description="Practical articles on AI, technology, projects, and careers.">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Knowledge</p>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">Blog</h1>
+    <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">Practical knowledge for learning AI, building software, and navigating technical careers.</p>
+    <div class="mt-7"><label for="article-search" class="sr-only">Search articles</label><input id="article-search" type="search" placeholder="Search articles..." class="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-accent)] focus:outline-none" /></div>
+    <div class="mt-4 flex flex-wrap gap-2">{categories.map(cat => <button class="blog-filter rounded-full border border-[var(--color-border)] px-4 py-2 text-sm" data-filter={cat}>{cat}</button>)}</div>
+    {featured && <section class="mt-10"><p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Featured</p><div class="mt-4 max-w-3xl"><ArticleCard post={featured} /></div></section>}
+    <section class="mt-12"><div class="flex items-end justify-between"><h2 class="text-2xl font-bold">Latest</h2><span id="article-count" class="text-sm text-[var(--color-text-muted)]">{latest.length} articles</span></div><div id="articles-grid" class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{latest.map(post => <div class="blog-card" data-category={post.data.category} data-search={`${post.data.title} ${post.data.description} ${post.data.category} ${(post.data.tags||[]).join(' ')}`}><ArticleCard post={post} /></div>)}</div><div id="blog-empty" class="hidden mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-10 text-center text-[var(--color-text-muted)]">No articles match your search.</div></section>
   </div>
-
   <script>
-    document.addEventListener('astro:page-load', () => {
-      const filterBtns = document.querySelectorAll('.filter-btn');
-      const articles = document.querySelectorAll('.article-card');
-      const noArticlesMsg = document.getElementById('no-articles-msg');
-      
-      // Get category from URL if it exists (e.g., /blog?category=ai)
-      const urlParams = new URLSearchParams(window.location.search);
-      const initialFilter = urlParams.get('category') || 'all';
-
-      function applyFilter(filterValue) {
-        let visibleCount = 0;
-
-        // Update active button styling
-        filterBtns.forEach(btn => {
-          if (btn.getAttribute('data-filter') === filterValue) {
-            btn.classList.add('bg-[var(--color-accent)]', 'text-white');
-            btn.classList.remove('bg-[var(--color-bg-secondary)]', 'text-[var(--color-text-secondary)]');
-          } else {
-            btn.classList.remove('bg-[var(--color-accent)]', 'text-white');
-            btn.classList.add('bg-[var(--color-bg-secondary)]', 'text-[var(--color-text-secondary)]');
-          }
-        });
-
-        // Filter the articles
-        articles.forEach(article => {
-          const articleCategory = article.getAttribute('data-category');
-          if (filterValue === 'all' || articleCategory === filterValue) {
-            article.classList.remove('hidden');
-            visibleCount++;
-          } else {
-            article.classList.add('hidden');
-          }
-        });
-
-        // Show empty state if nothing matches
-        if (visibleCount === 0) {
-          noArticlesMsg?.classList.remove('hidden');
-        } else {
-          noArticlesMsg?.classList.add('hidden');
-        }
-
-        // Update the URL without reloading the page
-        const newUrl = filterValue === 'all' 
-          ? window.location.pathname 
-          : `${window.location.pathname}?category=${filterValue}`;
-        window.history.replaceState({}, '', newUrl);
-      }
-
-      // Add click events to buttons
-      filterBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const filterValue = e.target.getAttribute('data-filter');
-          applyFilter(filterValue);
-        });
-      });
-
-      // Apply initial filter on load
-      applyFilter(initialFilter);
-    });
+    document.addEventListener('astro:page-load',()=>{const buttons=document.querySelectorAll<HTMLButtonElement>('.blog-filter');const cards=document.querySelectorAll<HTMLElement>('.blog-card');const input=document.getElementById('article-search') as HTMLInputElement|null;const empty=document.getElementById('blog-empty');const count=document.getElementById('article-count');const requested=new URLSearchParams(location.search).get('category');const available=['All','AI','Career','Projects','Technology'];const requestedLabel=requested?requested.charAt(0).toUpperCase()+requested.slice(1):'All';let filter=available.includes(requestedLabel)?requestedLabel:'All';const update=()=>{const q=(input?.value||'').trim().toLowerCase();let visible=0;cards.forEach(card=>{const okCat=filter==='All'||card.dataset.category===filter;const okText=!q||(card.dataset.search||'').toLowerCase().includes(q);const show=okCat&&okText;card.classList.toggle('hidden',!show);if(show)visible++;});if(count)count.textContent=`${visible} article${visible===1?'':'s'}`;empty?.classList.toggle('hidden',visible>0);buttons.forEach(b=>b.classList.toggle('active-filter',b.dataset.filter===filter));};buttons.forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter||'All';update();}));input?.addEventListener('input',update);update();});
   </script>
 </BaseLayout>

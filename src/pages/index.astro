@@ -7,76 +7,66 @@ import { getCollection } from 'astro:content';
 
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const sortedPosts = [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
-const featuredPosts = sortedPosts.filter(post => post.data.featured);
-const featured = (featuredPosts.length ? featuredPosts : sortedPosts).slice(0, 3);
-const featuredSlugs = new Set(featured.map(post => post.slug));
+const featured = sortedPosts.filter(post => post.data.featured).slice(0, 3);
+const fallbackFeatured = featured.length ? featured : sortedPosts.slice(0, 3);
+const featuredSlugs = new Set(fallbackFeatured.map(post => post.slug));
 const latest = sortedPosts.filter(post => !featuredSlugs.has(post.slug)).slice(0, 4);
+const roadmaps = (await getCollection('roadmaps')).filter(({ data }) => !data.featured || data.featured).slice(0, 6);
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).filter(({ data }) => data.featured).slice(0, 3);
+
 const categories = [
-  { name: 'ML', href: '/ai/ml', icon: '🧠' },
+  { name: 'Machine Learning', href: '/ai/machine-learning', icon: '🧠' },
+  { name: 'Deep Learning', href: '/ai/deep-learning', icon: '🔬' },
+  { name: 'Generative AI', href: '/ai/generative-ai', icon: '✨' },
   { name: 'LLMs', href: '/ai/llms', icon: '🤖' },
-  { name: 'Gen AI', href: '/ai/gen-ai', icon: '✨' },
-  { name: 'AI Eng.', href: '/ai/ai-engineering', icon: '⚙️' },
+  { name: 'AI Engineering', href: '/ai/ai-engineering', icon: '⚙️' },
 ];
-const roadmaps = await getCollection('roadmaps');
 ---
 
-<BaseLayout title="Practical AI, Technology & Career Guidance" description="Learn AI, build real projects, and advance your career in tech.">
-  <!-- Hero -->
-  <section class="bg-[var(--color-bg-secondary)] border-b border-[var(--color-border)] py-16 md:py-24">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--color-text-primary)] leading-tight">Build Your Future in AI</h1>
-      <p class="mt-4 text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto">Learn AI. Build real projects. Build a career that matters.</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="/ai" class="px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">Explore AI →</a>
-        <a href="/careers" class="px-6 py-3 border border-[var(--color-border)] text-[var(--color-text-primary)] rounded-lg font-semibold hover:bg-[var(--color-bg-secondary)] transition-colors">Career Roadmaps</a>
+<BaseLayout title="Practical AI, Technology & Career Guidance" description="Learn AI, build real projects, and turn technical skills into a career.">
+  <section class="border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <div class="max-w-4xl">
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-accent)]">Build your future in AI</p>
+        <h1 class="mt-4 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--color-text-primary)]">Learn AI. Build real projects. Build a career that matters.</h1>
+        <p class="mt-6 max-w-2xl text-lg sm:text-xl leading-8 text-[var(--color-text-secondary)]">Practical AI, technology, project, and career guidance for people building their future in tech.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="/ai" class="min-h-11 inline-flex items-center justify-center rounded-lg bg-[var(--color-accent)] px-6 py-3 font-semibold text-white hover:bg-[var(--color-accent-hover)]">Explore AI →</a>
+          <a href="/careers" class="min-h-11 inline-flex items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-6 py-3 font-semibold text-[var(--color-text-primary)] hover:border-[var(--color-accent)]">Career Roadmaps</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Featured -->
-  <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Trending / Featured</h2>
-    <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {featured.map(post => <ArticleCard post={post} />)}
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex items-end justify-between gap-4">
+      <div><p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Featured</p><h2 class="mt-1 text-2xl font-bold">Start here</h2></div>
+      <a href="/blog" class="text-sm font-semibold text-[var(--color-accent)] hover:underline">All articles →</a>
+    </div>
+    <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{fallbackFeatured.map(post => <ArticleCard post={post} />)}</div>
+  </section>
+
+  <section class="border-y border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Learn</p>
+      <h2 class="mt-1 text-2xl font-bold">Explore AI</h2>
+      <div class="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">{categories.map(cat => <CategoryCard category={cat} />)}</div>
     </div>
   </section>
 
-  <!-- Explore AI -->
-  <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Explore AI</h2>
-    <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {categories.map(cat => <CategoryCard category={cat} />)}
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex items-end justify-between gap-4"><div><p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Career</p><h2 class="mt-1 text-2xl font-bold">Career Roadmaps</h2></div><a href="/careers" class="text-sm font-semibold text-[var(--color-accent)] hover:underline">View all →</a></div>
+    <div class="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {roadmaps.map(roadmap => <a href={`/careers/${roadmap.slug}`} class="group rounded-xl border border-[var(--color-border)] p-5 hover:border-[var(--color-accent)] hover:shadow-sm"><div class="flex items-center justify-between gap-3"><span class="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">{roadmap.data.category}</span><span class="text-xs text-[var(--color-text-muted)]">{roadmap.data.estimatedTime}</span></div><h3 class="mt-3 font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)]">{roadmap.data.title}</h3><p class="mt-2 text-sm text-[var(--color-text-secondary)] line-clamp-2">{roadmap.data.description}</p></a>)}
     </div>
   </section>
 
-  <!-- Career Roadmaps -->
-  <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-[var(--color-bg-secondary)] rounded-2xl">
-    <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Career Roadmaps</h2>
-    <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {roadmaps.map(roadmap => (
-        <a href={`/careers/${roadmap.slug}`} class="p-4 text-center border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg)] transition-colors text-[var(--color-text-primary)]">
-          {roadmap.data.title}
-        </a>
-      ))}
-    </div>
+  {projects.length > 0 && <section class="border-y border-[var(--color-border)] bg-[var(--color-bg-secondary)]"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14"><div class="flex items-end justify-between gap-4"><div><p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Build</p><h2 class="mt-1 text-2xl font-bold">Build Something</h2></div><a href="/projects" class="text-sm font-semibold text-[var(--color-accent)] hover:underline">Explore projects →</a></div><div class="mt-6 grid gap-6 md:grid-cols-3">{projects.map(project => <a href={`/projects/${project.slug}`} class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] p-5 hover:border-[var(--color-accent)]"><span class="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">{project.data.category} · {project.data.difficulty}</span><h3 class="mt-2 font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)]">{project.data.title}</h3><p class="mt-2 text-sm text-[var(--color-text-secondary)] line-clamp-2">{project.data.description}</p></a>)}</div></div></section>}
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex items-end justify-between gap-4"><div><p class="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Read</p><h2 class="mt-1 text-2xl font-bold">Latest Articles</h2></div><a href="/blog" class="text-sm font-semibold text-[var(--color-accent)] hover:underline">Browse the blog →</a></div>
+    <div class="mt-6 grid gap-6 md:grid-cols-2">{latest.map(post => <ArticleCard post={post} />)}</div>
   </section>
 
-  <!-- Latest -->
-  <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Latest Articles</h2>
-    <div class="mt-6 grid gap-6 md:grid-cols-2">
-      {latest.map(post => <ArticleCard post={post} />)}
-    </div>
-  </section>
-
-  <!-- Build -->
-  <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center border-t border-[var(--color-border)]">
-    <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Build Something</h2>
-    <p class="mt-2 text-[var(--color-text-secondary)]">Practical AI projects from beginner → advanced</p>
-    <a href="/projects" class="mt-4 inline-block px-6 py-3 bg-[var(--color-accent)] text-white rounded-lg font-semibold hover:bg-[var(--color-accent-hover)] transition-colors">Explore Projects →</a>
-  </section>
-
-  <section class="py-12 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <Newsletter />
-  </section>
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16"><Newsletter /></section>
 </BaseLayout>

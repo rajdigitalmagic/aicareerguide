@@ -13,7 +13,18 @@ const topics = {
 };
 
 export function getStaticPaths() {
-  return Object.entries(topics).map(([slug, topic]) => ({ params: { topic: slug }, props: { topic, slug } }));
+  const topics = {
+    'machine-learning': { title: 'Machine Learning', description: 'Algorithms, evaluation, feature engineering, and practical machine learning.', aliases: ['machine learning', 'ml'] },
+    'deep-learning': { title: 'Deep Learning', description: 'Neural networks, PyTorch, CNNs, transformers, and modern deep learning.', aliases: ['deep learning', 'dl'] },
+    'generative-ai': { title: 'Generative AI', description: 'Practical systems for generation, RAG, agents, and multimodal applications.', aliases: ['generative ai', 'gen-ai', 'generative artificial intelligence'] },
+    'llms': { title: 'Large Language Models', description: 'Understand LLMs from tokenization and transformers to evaluation and production.', aliases: ['llm', 'llms', 'large language model', 'large language models'] },
+    'ai-engineering': { title: 'AI Engineering', description: 'Software engineering practices for deploying and operating AI systems.', aliases: ['ai engineering', 'ai-engineering'] },
+  };
+
+  return Object.entries(topics).map(([slug, topic]) => ({
+    params: { topic: slug },
+    props: { topic, slug },
+  }));
 }
 
 const { topic, slug } = Astro.props;

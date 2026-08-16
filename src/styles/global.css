@@ -2,21 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Allow Shiki to handle code block backgrounds naturally */
-.astro-code, .astro-code span {
-  transition: color 0.2s ease, background-color 0.2s ease;
-}
-
-/* Force Astro's Shiki dark mode variables when the <html> tag has the .dark class */
-html.dark .astro-code,
-html.dark .astro-code span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
-  font-style: var(--shiki-dark-font-style) !important;
-  font-weight: var(--shiki-dark-font-weight) !important;
-  text-decoration: var(--shiki-dark-text-decoration) !important;
-}
-
 @layer base {
   /* Light theme (default) */
   :root {
@@ -93,18 +78,22 @@ html.dark .astro-code span {
       scroll-behavior: auto !important;
     }
   }
+}
 
-  /* Shiki Dual Theme Fixes */
-  .astro-code, .astro-code span {
-    background-color: transparent !important;
-  }
+/* --- MUST STAY OUTSIDE OF @LAYER BASE --- */
 
-  /* Triggers Shiki's dark theme colors when the <html> tag has the .dark class */
-  .dark .astro-code,
-  .dark .astro-code span {
-    color: var(--shiki-dark) !important;
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
-  }
+/* Allow Shiki to handle code block backgrounds naturally */
+.astro-code, .astro-code span {
+  background-color: transparent !important;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Force Astro's Shiki dark mode variables when the <html> tag has the .dark class */
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

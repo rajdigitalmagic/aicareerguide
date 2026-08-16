@@ -6,7 +6,7 @@ author: "AI Career Guide"
 category: "Projects"
 topics: ["ai-projects", "artificial-intelligence", "machine-learning", "deep-learning", "llms", "software-engineering"]
 tags: ["AI projects", "AI project ideas", "machine learning projects", "deep learning projects", "LLM projects", "AI portfolio", "AI projects for beginners", "AI engineer projects", "AI project roadmap"]
-image: "/images/blog/ai-projects-guide.png"
+image: "/images/blog/ai-projects-guide.webp"
 readingTime: "18"
 featured: false
 draft: false

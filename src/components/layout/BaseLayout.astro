@@ -9,14 +9,31 @@ const props=Astro.props;
 ---
 <!doctype html><html lang="en" class="h-full"><head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q91ESRJBBL"></script>
 <script is:inline>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  window.gtag = function () {
+    window.dataLayer.push(arguments);
+  };
 
+  gtag('js', new Date());
   gtag('config', 'G-Q91ESRJBBL');
+
+  const loadGoogleAnalytics = () => {
+    if (document.querySelector('script[data-ga4]')) return;
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-Q91ESRJBBL';
+    script.dataset.ga4 = 'true';
+
+    document.head.appendChild(script);
+  };
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
+  } else {
+    window.setTimeout(loadGoogleAnalytics, 1500);
+  }
 </script>
 
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#0F172A"/>

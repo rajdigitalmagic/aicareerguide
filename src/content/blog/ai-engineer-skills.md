@@ -18,7 +18,7 @@ topics:
   - Machine Learning
   - Software Engineering
   - LLM Engineering
-image: "../../assets/blog/ai-engineering-skills.webp"
+image: "../../assets/blog/ai-engineer-skills.webp"
 ---
 
 # AI Engineer Skills: What You Actually Need to Learn

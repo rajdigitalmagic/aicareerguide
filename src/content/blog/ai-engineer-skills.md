@@ -3,7 +3,7 @@ title: "AI Engineer Skills: What You Actually Need to Learn"
 description: "A practical guide to the skills AI engineers need, from Python and software engineering to machine learning, LLMs, RAG, evaluation, deployment, system design, and problem solving."
 pubDate: 2026-08-17
 author: "AI Career Guide"
-category: "AI Engineering"
+category: "AI"
 tags:
   - AI Engineer Skills
   - AI Engineering

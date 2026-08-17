@@ -19,7 +19,7 @@ topics:
 sources:
   - "https://www.ibm.com/think/topics/ai-developer"
   - "https://www.ibm.com/think/perspectives/what-every-future-software-engineer-must-know"
-image: "./what-is-ai-engineer.webp"
+image: "./what-is-an-ai-engineer.webp"
 ---
 
 # What Is an AI Engineer?
